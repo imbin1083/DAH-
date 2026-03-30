@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K-POP 진화 보고서</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=DM+Mono:wght@400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a26;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8e6f0;
+    --muted: rgba(232,230,240,0.45);
+    --accent1: #c8a4ff;
+    --accent2: #ff6b9d;
+    --accent3: #4dd9c0;
+    --accent4: #ffb347;
+    --gen1: #8b6fff;
+    --gen2: #ff5fa0;
+    --gen3: #ff7043;
+    --gen4: #26d9b8;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-serif: 'Noto Serif KR', serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-serif);
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 30%, rgba(139,111,255,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 70%, rgba(255,91,160,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 60% 20%, rgba(38,217,184,0.07) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--accent3);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 18vw, 14rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #fff 0%, var(--accent1) 40%, var(--accent2) 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.4s forwards;
+  }
+
+  .hero-sub {
+    font-family: var(--font-serif);
+    font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+    color: var(--muted);
+    margin-top: 1.5rem;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.6s forwards;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 3.5rem;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.8s forwards;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat-num {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    line-height: 1;
+    color: var(--accent1);
+  }
+
+  .hero-stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.2s forwards;
+  }
+
+  .scroll-hint span {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--accent1), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transform: translateY(-100%);
+    transition: transform 0.4s ease;
+  }
+
+  nav.visible { transform: translateY(0); }
+
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent1); }
+
+  /* ── SECTION WRAPPER ── */
+  section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+  }
+
+  .section-tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin-bottom: 3rem;
+  }
+
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent1), transparent);
+    margin: 5rem 0;
+    opacity: 0.3;
+  }
+
+  /* ── TIMELINE ── */
+  #timeline { padding-top: 3rem; }
+
+  .timeline-filters {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    padding: 0.5rem 1.2rem;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    color: var(--bg);
+    border-color: transparent;
+  }
+
+  .filter-btn[data-gen="all"].active { background: var(--accent1); }
+  .filter-btn[data-gen="1"].active   { background: var(--gen1); }
+  .filter-btn[data-gen="2"].active   { background: var(--gen2); }
+  .filter-btn[data-gen="3"].active   { background: var(--gen3); }
+  .filter-btn[data-gen="4"].active   { background: var(--gen4); }
+
+  .timeline-track {
+    position: relative;
+    padding-left: 2.5rem;
+  }
+
+  .timeline-track::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--gen1), var(--gen2), var(--gen3), var(--gen4));
+    opacity: 0.4;
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 2.5rem;
+    opacity: 1;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .timeline-item.hidden {
+    display: none;
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -2.5rem;
+    top: 0.8rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transform: translateX(-4px);
+  }
+
+  .gen-1 .timeline-dot { background: var(--gen1); box-shadow: 0 0 12px var(--gen1); }
+  .gen-2 .timeline-dot { background: var(--gen2); box-shadow: 0 0 12px var(--gen2); }
+  .gen-3 .timeline-dot { background: var(--gen3); box-shadow: 0 0 12px var(--gen3); }
+  .gen-4 .timeline-dot { background: var(--gen4); box-shadow: 0 0 12px var(--gen4); }
+
+  .timeline-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem 1.8rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .timeline-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+  }
+
+  .gen-1 .timeline-card::before { background: var(--gen1); }
+  .gen-2 .timeline-card::before { background: var(--gen2); }
+  .gen-3 .timeline-card::before { background: var(--gen3); }
+  .gen-4 .timeline-card::before { background: var(--gen4); }
+
+  .timeline-card:hover {
+    background: var(--surface2);
+    transform: translateX(4px);
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  .tc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .tc-year {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+  }
+
+  .tc-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .tc-gen-badge {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.7rem;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .gen-1 .tc-gen-badge { background: rgba(139,111,255,0.15); color: var(--gen1); border: 1px solid rgba(139,111,255,0.3); }
+  .gen-2 .tc-gen-badge { background: rgba(255,95,160,0.15); color: var(--gen2); border: 1px solid rgba(255,95,160,0.3); }
+  .gen-3 .tc-gen-badge { background: rgba(255,112,67,0.15); color: var(--gen3); border: 1px solid rgba(255,112,67,0.3); }
+  .gen-4 .tc-gen-badge { background: rgba(38,217,184,0.15); color: var(--gen4); border: 1px solid rgba(38,217,184,0.3); }
+
+  .tc-body {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-top: 0.75rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, margin-top 0.3s;
+  }
+
+  .timeline-card.open .tc-body {
+    max-height: 200px;
+    margin-top: 0.75rem;
+  }
+
+  .tc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.8rem;
+  }
+
+  .tc-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: rgba(232,230,240,0.5);
+  }
+
+  .tc-toggle {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    letter-spacing: 0.1em;
+    transition: color 0.2s;
+  }
+
+  .timeline-card:hover .tc-toggle { color: var(--accent1); }
+
+  /* ── CHART SECTION ── */
+  #charts .chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 700px) {
+    #charts .chart-grid { grid-template-columns: 1fr; }
+    nav { display: none; }
+  }
+
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
+
+  .chart-card h3 {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  /* Bar chart */
+  .bar-chart { display: flex; flex-direction: column; gap: 0.9rem; }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr 3rem;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .bar-label {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  .bar-track {
+    height: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .bar-val {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text);
+    text-align: right;
+  }
+
+  /* Donut chart */
+  .donut-wrap {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .donut-svg { flex-shrink: 0; }
+
+  .donut-legend { display: flex; flex-direction: column; gap: 0.6rem; }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Line chart */
+  .line-chart-wrap { width: 100%; overflow: hidden; }
+
+  /* ── QUIZ SECTION ── */
+  #quiz .quiz-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2.5rem;
+    max-width: 700px;
+  }
+
+  .quiz-progress {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 2rem;
+  }
+
+  .quiz-progress-dot {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    transition: background 0.3s;
+  }
+
+  .quiz-progress-dot.done { background: var(--accent1); }
+  .quiz-progress-dot.current { background: var(--accent2); }
+
+  .quiz-q-num {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .quiz-question {
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .quiz-option {
+    padding: 0.9rem 1.2rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-serif);
+    font-size: 0.92rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .quiz-option:hover:not(:disabled) {
+    background: var(--surface2);
+    border-color: var(--accent1);
+  }
+
+  .quiz-option.correct { border-color: var(--gen4); background: rgba(38,217,184,0.08); color: var(--gen4); }
+  .quiz-option.wrong   { border-color: var(--gen2); background: rgba(255,95,160,0.08); color: var(--gen2); }
+
+  .opt-letter {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .quiz-feedback {
+    margin-top: 1.2rem;
+    padding: 0.9rem 1.2rem;
+    border-radius: 3px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    display: none;
+  }
+
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok  { background: rgba(38,217,184,0.08); border: 1px solid rgba(38,217,184,0.2); color: var(--gen4); }
+  .quiz-feedback.bad { background: rgba(255,95,160,0.08); border: 1px solid rgba(255,95,160,0.2); color: var(--gen2); }
+
+  .quiz-next-btn {
+    margin-top: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.75rem 2rem;
+    border: 1px solid var(--accent1);
+    background: transparent;
+    color: var(--accent1);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    display: none;
+  }
+
+  .quiz-next-btn.show { display: inline-block; }
+  .quiz-next-btn:hover { background: var(--accent1); color: var(--bg); }
+
+  .quiz-result {
+    text-align: center;
+    padding: 2rem 0;
+    display: none;
+  }
+
+  .quiz-result.show { display: block; }
+
+  .result-score {
+    font-family: var(--font-display);
+    font-size: 5rem;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .result-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .result-msg { font-size: 1rem; color: var(--muted); line-height: 1.7; }
+
+  .quiz-restart {
+    margin-top: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.75rem 2rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .quiz-restart:hover { border-color: var(--accent1); color: var(--accent1); }
+
+  /* ── SEARCH ── */
+  #search .search-bar-wrap {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  .search-bar {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-bar:focus { border-color: var(--accent1); }
+  .search-bar::placeholder { color: var(--muted); }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 0.9rem;
+    pointer-events: none;
+  }
+
+  .search-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag-filter {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .tag-filter.active { border-color: var(--accent3); color: var(--accent3); }
+
+  .search-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.2rem;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .result-card:hover {
+    border-color: rgba(255,255,255,0.1);
+    transform: translateY(-2px);
+    background: var(--surface2);
+  }
+
+  .result-card.hidden { display: none; }
+
+  .rc-gen {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .gen-1-text { color: var(--gen1); }
+  .gen-2-text { color: var(--gen2); }
+  .gen-3-text { color: var(--gen3); }
+  .gen-4-text { color: var(--gen4); }
+
+  .rc-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  .rc-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  .rc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .rc-tag {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.07em;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: rgba(232,230,240,0.45);
+  }
+
+  .no-results {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding: 3rem;
+    text-align: center;
+    grid-column: 1/-1;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Highlight search match */
+  mark {
+    background: rgba(200,164,255,0.25);
+    color: var(--accent1);
+    border-radius: 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <div class="nav-logo">K-POP REPORT</div>
+  <ul class="nav-links">
+    <li><a href="#timeline">타임라인</a></li>
+    <li><a href="#charts">데이터</a></li>
+    <li><a href="#quiz">퀴즈</a></li>
+    <li><a href="#search">아이돌 검색</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-tag">2025 인터랙티브 보고서</div>
+  <h1 class="hero-title">K-POP</h1>
+  <p class="hero-sub">1992년부터 현재까지 — 한국 대중음악의 글로벌 진화</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">4</div>
+      <div class="hero-stat-label">세대</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">30+</div>
+      <div class="hero-stat-label">년의 역사</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">100+</div>
+      <div class="hero-stat-label">개국 팬덤</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">$12B</div>
+      <div class="hero-stat-label">연간 경제효과</div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<section id="timeline" class="reveal">
+  <div class="section-tag">Chapter 01</div>
+  <h2 class="section-title">세대별 타임라인</h2>
+
+  <div class="timeline-filters">
+    <button class="filter-btn active" data-gen="all">전체</button>
+    <button class="filter-btn" data-gen="1">1세대</button>
+    <button class="filter-btn" data-gen="2">2세대</button>
+    <button class="filter-btn" data-gen="3">3세대</button>
+    <button class="filter-btn" data-gen="4">4세대</button>
+  </div>
+
+  <div class="timeline-track" id="timeline-track">
+    <!-- items injected by JS -->
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CHARTS -->
+<section id="charts" class="reveal">
+  <div class="section-tag">Chapter 02</div>
+  <h2 class="section-title">데이터로 보는 K-POP</h2>
+
+  <div class="chart-grid">
+
+    <!-- Bar: 유튜브 구독자 -->
+    <div class="chart-card">
+      <h3>대표 채널 유튜브 구독자 (단위: 백만)</h3>
+      <div class="bar-chart" id="bar-chart"></div>
+    </div>
+
+    <!-- Donut: 세대별 해외 팬 비중 -->
+    <div class="chart-card">
+      <h3>세대별 해외 팬덤 비중 (%)</h3>
+      <div class="donut-wrap">
+        <svg class="donut-svg" id="donut-svg" width="130" height="130" viewBox="0 0 130 130"></svg>
+        <div class="donut-legend" id="donut-legend"></div>
+      </div>
+    </div>
+
+    <!-- Bar: 빌보드 Hot 100 최고 순위 -->
+    <div class="chart-card">
+      <h3>빌보드 Hot 100 역대 최고 순위 (낮을수록 좋음)</h3>
+      <div class="bar-chart" id="bar-chart2"></div>
+    </div>
+
+    <!-- Line: 앨범 판매량 추이 -->
+    <div class="chart-card">
+      <h3>연도별 K-POP 앨범 판매량 추이 (백만 장)</h3>
+      <div class="line-chart-wrap">
+        <svg id="line-svg" width="100%" viewBox="0 0 320 150" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- QUIZ -->
+<section id="quiz" class="reveal">
+  <div class="section-tag">Chapter 03</div>
+  <h2 class="section-title">K-POP 퀴즈</h2>
+
+  <div class="quiz-wrap">
+    <div class="quiz-progress" id="quiz-progress"></div>
+    <div id="quiz-main">
+      <div class="quiz-q-num" id="quiz-q-num"></div>
+      <div class="quiz-question" id="quiz-question"></div>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button class="quiz-next-btn" id="quiz-next">다음 문제 →</button>
+    </div>
+    <div class="quiz-result" id="quiz-result">
+      <div class="result-score" id="result-score"></div>
+      <div class="result-label">/ 5점 만점</div>
+      <div class="result-msg" id="result-msg"></div>
+      <button class="quiz-restart" onclick="initQuiz()">다시 풀기</button>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SEARCH -->
+<section id="search" class="reveal">
+  <div class="section-tag">Chapter 04</div>
+  <h2 class="section-title">아이돌 검색</h2>
+
+  <div class="search-bar-wrap">
+    <span class="search-icon">⌕</span>
+    <input class="search-bar" id="search-input" type="text" placeholder="아티스트 이름, 소속사, 장르로 검색...">
+  </div>
+
+  <div class="search-filters" id="tag-filters">
+    <button class="tag-filter active" data-tag="all">전체</button>
+    <button class="tag-filter" data-tag="보이밴드">보이밴드</button>
+    <button class="tag-filter" data-tag="걸그룹">걸그룹</button>
+    <button class="tag-filter" data-tag="솔로">솔로</button>
+    <button class="tag-filter" data-tag="댄스">댄스</button>
+    <button class="tag-filter" data-tag="힙합">힙합</button>
+  </div>
+
+  <div class="search-results" id="search-results"></div>
+</section>
+
+<footer>
+  &copy; 2025 K-POP 진화 보고서 · 인터랙티브 에디션 · 모든 데이터는 공개 자료 기반 추정치
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+
+const timelineData = [
+  { gen: 1, year: '1992', title: '서태지와 아이들 데뷔', desc: '한국 대중음악의 혁명. 랩·록·댄스를 융합한 "난 알아요"가 발매되며 기성 음악계에 충격을 줬다. K-POP의 원점으로 평가받는다.', tags: ['랩', '댄스', '혁신'] },
+  { gen: 1, year: '1996', title: 'SM엔터테인먼트 H.O.T 데뷔', desc: '이수만이 설계한 아이돌 시스템의 첫 결과물. 트레이닝→데뷔→팬덤 관리로 이어지는 기획사 주도 모델을 확립했다.', tags: ['아이돌', '기획사', 'SM'] },
+  { gen: 1, year: '1998', title: 'S.E.S & 핑클 — 걸그룹 시대', desc: '국내 최초의 체계적 걸그룹 경쟁 구도. S.E.S(SM)와 핑클(DSP)의 양강 구도가 팬덤 문화를 폭발적으로 키웠다.', tags: ['걸그룹', '팬덤', '1세대'] },
+  { gen: 2, year: '2003', title: 'TVXQ 데뷔 — 아시아 한류 시작', desc: '동방신기의 일본 진출은 K-POP의 아시아 확산을 가속했다. 오리콘 차트 정상을 점령하며 한류 1.0을 이끌었다.', tags: ['한류', '일본', 'TVXQ'] },
+  { gen: 2, year: '2006', title: '빅뱅 데뷔 — YG의 반란', desc: '아이돌에 힙합·R&B를 접목한 빅뱅은 기존 청소년 팬덤을 넘어 20~30대까지 흡수하며 K-POP의 장르 폭을 확장했다.', tags: ['힙합', 'YG', '빅뱅'] },
+  { gen: 2, year: '2007', title: '소녀시대 & 원더걸스', desc: '"Tell Me" 댄스 열풍과 소녀시대의 "Gee"는 국내 음원 차트를 갈아치웠고, 원더걸스는 미국 빌보드 버블100에 진입해 K-POP 역사를 새로 썼다.', tags: ['걸그룹', '빌보드', '댄스'] },
+  { gen: 3, year: '2012', title: 'PSY — 강남스타일 전 세계 충격', desc: '유튜브 역사상 최초로 10억 뷰를 돌파. 서구권이 K-POP의 존재를 처음으로 실감하게 된 역사적 전환점이다.', tags: ['유튜브', '글로벌', '바이럴'] },
+  { gen: 3, year: '2012', title: 'EXO & 고도화된 세계관', desc: 'SM은 EXO를 통해 아이돌 스토리텔링을 한 단계 끌어올렸다. 초자연적 세계관과 한중 동시 데뷔로 콘셉트 마케팅의 교과서가 됐다.', tags: ['세계관', 'EXO', 'SM'] },
+  { gen: 3, year: '2013', title: 'BTS 데뷔 — 작은 기획사의 기적', desc: '빅히트엔터테인먼트(현 HYBE)에서 데뷔한 BTS는 SNS와 팬 소통을 무기로 기존 K-POP 공식을 깼다. 빌보드 Hot 100 1위, 그래미 노미네이트까지.', tags: ['BTS', '빌보드', 'SNS'] },
+  { gen: 3, year: '2016', title: 'BLACKPINK 데뷔 — 걸크러쉬 글로벌', desc: 'YG의 걸그룹 BLACKPINK는 "BOOMBAYAH"로 데뷔 즉시 유튜브 레코드를 세우며 서구 팝 시장에서도 K-POP 걸그룹의 가능성을 입증했다.', tags: ['BLACKPINK', '유튜브', '걸그룹'] },
+  { gen: 4, year: '2020', title: 'aespa — 가상 세계관의 진화', desc: 'SM은 aespa를 통해 현실 멤버와 AI 아바타(æ)가 공존하는 메타버스 K-POP을 선보였다. 4세대의 상징적 출발점.', tags: ['메타버스', 'AI', 'aespa'] },
+  { gen: 4, year: '2022', title: '르세라핌 & IVE — 다국적 걸그룹', desc: '처음부터 글로벌을 겨냥한 다국적 멤버 구성과 숏폼 친화적 안무, 틱톡 바이럴 전략이 4세대 걸그룹의 표준이 됐다.', tags: ['글로컬', '틱톡', '다국적'] },
+  { gen: 4, year: '2022', title: 'NewJeans — Y2K & 탈장르화', desc: 'ADOR 소속 NewJeans는 Y2K 미학과 트렌디한 틱톡 바이럴로 기성 K-POP 공식을 거부하며 신선함을 무기로 삼았다.', tags: ['Y2K', 'NewJeans', '탈장르'] },
+];
+
+const barData = [
+  { label: 'BLACKPINK', val: 93.1, color: '#ff6b9d' },
+  { label: 'BTS',       val: 77.5, color: '#8b6fff' },
+  { label: 'TWICE',     val: 14.5, color: '#ffb347' },
+  { label: 'EXO',       val: 12.8, color: '#4dd9c0' },
+  { label: 'aespa',     val: 10.2, color: '#c8a4ff' },
+];
+
+const bar2Data = [
+  { label: 'BTS — Dynamite', val: 1,  color: '#8b6fff' },
+  { label: 'BTS — Butter',   val: 1,  color: '#8b6fff' },
+  { label: 'BLACKPINK — Pink Venom', val: 22, color: '#ff6b9d' },
+  { label: 'TWICE — TT',    val: 37, color: '#ffb347' },
+  { label: 'PSY — Gangnam', val: 64, color: '#4dd9c0' },
+];
+
+const donutData = [
+  { label: '1세대 (해외 5%)',  pct: 5,  color: '#8b6fff' },
+  { label: '2세대 (해외 25%)', pct: 25, color: '#ff5fa0' },
+  { label: '3세대 (해외 60%)', pct: 60, color: '#ff7043' },
+  { label: '4세대 (해외 75%)', pct: 75, color: '#26d9b8' },
+];
+
+const lineData = [
+  { year: '2005', val: 2 },
+  { year: '2008', val: 5 },
+  { year: '2012', val: 12 },
+  { year: '2015', val: 20 },
+  { year: '2018', val: 44 },
+  { year: '2020', val: 56 },
+  { year: '2022', val: 80 },
+  { year: '2024', val: 100 },
+];
+
+const quizData = [
+  {
+    q: '"K-POP 아이돌 시스템의 아버지"로 불리며 SM엔터테인먼트를 창립한 인물은?',
+    opts: ['양현석', '이수만', '박진영', '방시혁'],
+    ans: 1,
+    exp: '이수만은 1989년 SM기획(현 SM엔터테인먼트)을 설립하고 체계적인 트레이닝-데뷔-팬덤 관리 모델을 처음으로 정착시켰습니다.'
+  },
+  {
+    q: '유튜브 역사상 최초로 10억 뷰를 달성한 K-POP 뮤직비디오는?',
+    opts: ['BTS — Dynamite', 'BLACKPINK — DDU-DU', 'PSY — Gangnam Style', 'TWICE — TT'],
+    ans: 2,
+    exp: 'PSY의 강남스타일(2012)은 유튜브 최초의 10억 뷰 영상이 됐으며, K-POP을 전 세계에 알린 역사적 전환점입니다.'
+  },
+  {
+    q: 'BTS가 소속된 기획사 HYBE의 이전 이름은?',
+    opts: ['JYP엔터테인먼트', '빅히트엔터테인먼트', '스타쉽엔터테인먼트', 'FNC엔터테인먼트'],
+    ans: 1,
+    exp: '빅히트엔터테인먼트(Big Hit Entertainment)는 2021년 현재의 사명인 HYBE로 변경했습니다.'
+  },
+  {
+    q: '다음 중 "4세대" 아이돌 그룹이 아닌 것은?',
+    opts: ['aespa', 'NewJeans', 'EXO', '르세라핌'],
+    ans: 2,
+    exp: 'EXO는 2012년 데뷔한 3세대 대표 그룹입니다. aespa(2020), NewJeans(2022), 르세라핌(2022)은 모두 4세대 그룹입니다.'
+  },
+  {
+    q: 'SM엔터테인먼트가 4세대에 내놓은 "메타버스 걸그룹"의 이름은?',
+    opts: ['ITZY', 'aespa', 'f(x)', 'Red Velvet'],
+    ans: 1,
+    exp: 'aespa(에스파)는 SM이 2020년 선보인 그룹으로, 현실 멤버와 AI 가상 자아(æ)가 공존하는 독특한 메타버스 세계관이 특징입니다.'
+  },
+];
+
+const idolData = [
+  { name: 'BTS', gen: 3, agency: 'HYBE', debut: '2013', type: '보이밴드', tags: ['보이밴드', '힙합', 'SNS', '댄스'], desc: '빌보드 Hot 100 1위를 기록한 최초의 K-POP 그룹. RM·진·슈가·제이홉·지민·뷔·정국으로 구성.' },
+  { name: 'BLACKPINK', gen: 3, agency: 'YG', debut: '2016', type: '걸그룹', tags: ['걸그룹', '팝', '유튜브', '댄스'], desc: '유튜브 구독자 9천만 명 이상의 역대 최다 구독 K-POP 채널. 제니·지수·로제·리사.' },
+  { name: 'EXO', gen: 3, agency: 'SM', debut: '2012', type: '보이밴드', tags: ['보이밴드', '세계관', '댄스'], desc: '한중 동시 데뷔라는 혁신적 전략으로 아시아 팬덤을 사로잡은 3세대 대표 그룹.' },
+  { name: 'TWICE', gen: 3, agency: 'JYP', debut: '2015', type: '걸그룹', tags: ['걸그룹', '팝', '댄스', '일본'], desc: '국내 최다 밀리언셀러 걸그룹. 9인조로 일본·동남아시아에서도 강력한 팬덤 보유.' },
+  { name: 'aespa', gen: 4, agency: 'SM', debut: '2020', type: '걸그룹', tags: ['걸그룹', '메타버스', '댄스', '세계관'], desc: 'AI 가상 아바타와 현실 멤버가 공존하는 메타버스 콘셉트의 4세대 선두주자.' },
+  { name: 'NewJeans', gen: 4, agency: 'ADOR', debut: '2022', type: '걸그룹', tags: ['걸그룹', 'Y2K', '틱톡', '팝'], desc: 'Y2K 감성과 틱톡 바이럴로 기존 K-POP 공식을 거부한 독특한 포지셔닝의 그룹.' },
+  { name: '르세라핌', gen: 4, agency: 'HYBE', debut: '2022', type: '걸그룹', tags: ['걸그룹', '댄스', '글로벌', '다국적'], desc: '처음부터 글로벌을 겨냥한 다국적 멤버 구성. "FEARLESS"로 데뷔 첫 주 화려한 성적.' },
+  { name: '아이브', gen: 4, agency: 'Starship', debut: '2021', type: '걸그룹', tags: ['걸그룹', '팝', '댄스', '글로벌'], desc: '"ELEVEN"으로 데뷔하자마자 각종 차트를 석권. 4세대 걸그룹 경쟁의 중심축.' },
+  { name: '동방신기', gen: 2, agency: 'SM', debut: '2003', type: '보이밴드', tags: ['보이밴드', '한류', '일본', '댄스'], desc: '한류 1.0의 아이콘. 일본 오리콘 차트 1위를 장기간 유지하며 아시아 한류를 이끌었다.' },
+  { name: '소녀시대', gen: 2, agency: 'SM', debut: '2007', type: '걸그룹', tags: ['걸그룹', '팝', '한류', '댄스'], desc: '"Gee"로 음원 차트를 장악하며 2세대 걸그룹의 전설이 됐다. 9인조 대형 그룹.' },
+  { name: '빅뱅', gen: 2, agency: 'YG', debut: '2006', type: '보이밴드', tags: ['보이밴드', '힙합', 'R&B', 'YG'], desc: 'K-POP에 힙합과 R&B를 본격적으로 접목한 선구자. G-DRAGON·T.O.P·태양·대성·승리.' },
+  { name: 'PSY', gen: 3, agency: 'YG', debut: '2001', type: '솔로', tags: ['솔로', '댄스', '글로벌', '바이럴'], desc: '"강남스타일"로 유튜브 최초 10억 뷰를 달성하며 K-POP의 글로벌 가능성을 입증했다.' },
+];
+
+// ═══════════════════════════════════════════════
+// TIMELINE
+// ═══════════════════════════════════════════════
+
+function renderTimeline(filter = 'all') {
+  const track = document.getElementById('timeline-track');
+  track.innerHTML = '';
+  const items = filter === 'all' ? timelineData : timelineData.filter(d => d.gen == filter);
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = `timeline-item gen-${item.gen}`;
+    div.innerHTML = `
+      <div class="timeline-dot"></div>
+      <div class="timeline-card" onclick="this.classList.toggle('open')">
+        <div class="tc-header">
+          <div>
+            <div class="tc-year">${item.year}</div>
+            <div class="tc-title">${item.title}</div>
+          </div>
+          <span class="tc-gen-badge">${item.gen}세대</span>
+        </div>
+        <div class="tc-body">
+          ${item.desc}
+          <div class="tc-tags">${item.tags.map(t => `<span class="tc-tag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="tc-toggle">↓ 클릭해서 자세히 보기</div>
+      </div>
+    `;
+    track.appendChild(div);
+  });
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTimeline(btn.dataset.gen);
+  });
+});
+
+renderTimeline();
+
+// ═══════════════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════════════
+
+function renderBarChart(containerId, data, maxVal) {
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML = '';
+  const max = maxVal || Math.max(...data.map(d => d.val));
+  data.forEach(d => {
+    const pct = (d.val / max) * 100;
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <div class="bar-label">${d.label}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="background:${d.color}" data-width="${pct}%"></div>
+      </div>
+      <div class="bar-val">${d.val}</div>
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+function renderDonut() {
+  const svg = document.getElementById('donut-svg');
+  const legend = document.getElementById('donut-legend');
+  svg.innerHTML = '';
+  legend.innerHTML = '';
+  const cx = 65, cy = 65, r = 48, stroke = 16;
+  const circumference = 2 * Math.PI * r;
+  const total = donutData.reduce((s, d) => s + d.pct, 0);
+  let offset = 0;
+
+  donutData.forEach(d => {
+    const dash = (d.pct / total) * circumference;
+    const gap  = circumference - dash;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', cx);
+    circle.setAttribute('cy', cy);
+    circle.setAttribute('r', r);
+    circle.setAttribute('fill', 'none');
+    circle.setAttribute('stroke', d.color);
+    circle.setAttribute('stroke-width', stroke);
+    circle.setAttribute('stroke-dasharray', `${dash} ${gap}`);
+    circle.setAttribute('stroke-dashoffset', -offset);
+    circle.setAttribute('transform', `rotate(-90, ${cx}, ${cy})`);
+    circle.style.opacity = '0.85';
+    svg.appendChild(circle);
+    offset += dash;
+
+    const li = document.createElement('div');
+    li.className = 'legend-item';
+    li.innerHTML = `<span class="legend-dot" style="background:${d.color}"></span>${d.label}`;
+    legend.appendChild(li);
+  });
+}
+
+function renderLineChart() {
+  const svg = document.getElementById('line-svg');
+  const W = 320, H = 150, pad = { t: 10, r: 10, b: 30, l: 30 };
+  const iW = W - pad.l - pad.r;
+  const iH = H - pad.t - pad.b;
+  const maxVal = Math.max(...lineData.map(d => d.val));
+  const pts = lineData.map((d, i) => {
+    const x = pad.l + (i / (lineData.length - 1)) * iW;
+    const y = pad.t + iH - (d.val / maxVal) * iH;
+    return { x, y, ...d };
+  });
+
+  // Area fill
+  const areaPath = `M${pts[0].x},${pad.t + iH} ` +
+    pts.map(p => `L${p.x},${p.y}`).join(' ') +
+    ` L${pts[pts.length-1].x},${pad.t + iH} Z`;
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#8b6fff" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#8b6fff" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${areaPath}" fill="url(#lg)"/>
+    <polyline points="${pts.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="#8b6fff" stroke-width="1.5"/>
+    ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#8b6fff"/>`).join('')}
+    ${pts.filter((_, i) => i % 2 === 0).map(p =>
+      `<text x="${p.x}" y="${H - 8}" text-anchor="middle" font-size="8" fill="rgba(232,230,240,0.4)" font-family="'DM Mono', monospace">${p.year}</text>`
+    ).join('')}
+    ${[0, 50, 100].map(v => {
+      const y = pad.t + iH - (v / maxVal) * iH;
+      return `<line x1="${pad.l}" y1="${y}" x2="${W - pad.r}" y2="${y}" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+              <text x="${pad.l - 4}" y="${y + 3}" text-anchor="end" font-size="8" fill="rgba(232,230,240,0.35)" font-family="'DM Mono', monospace">${v}</text>`;
+    }).join('')}
+  `;
+}
+
+function animateBars() {
+  document.querySelectorAll('.bar-fill').forEach(bar => {
+    bar.style.width = bar.dataset.width;
+  });
+}
+
+renderBarChart('bar-chart', barData);
+renderBarChart('bar-chart2', bar2Data.map(d => ({...d, val: 101 - d.val})), 100);
+renderDonut();
+renderLineChart();
+
+// ═══════════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════════
+
+let qIdx = 0, score = 0, answered = false;
+
+function initQuiz() {
+  qIdx = 0; score = 0; answered = false;
+  document.getElementById('quiz-result').classList.remove('show');
+  document.getElementById('quiz-main').style.display = '';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = quizData[qIdx];
+  const letters = ['A', 'B', 'C', 'D'];
+
+  // Progress
+  const prog = document.getElementById('quiz-progress');
+  prog.innerHTML = quizData.map((_, i) => {
+    let cls = 'quiz-progress-dot';
+    if (i < qIdx) cls += ' done';
+    else if (i === qIdx) cls += ' current';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  document.getElementById('quiz-q-num').textContent = `문제 ${qIdx + 1} / ${quizData.length}`;
+  document.getElementById('quiz-question').textContent = q.q;
+  document.getElementById('quiz-feedback').className = 'quiz-feedback';
+  document.getElementById('quiz-next').className = 'quiz-next-btn';
+
+  const optsEl = document.getElementById('quiz-options');
+  optsEl.innerHTML = q.opts.map((opt, i) => `
+    <button class="quiz-option" onclick="checkAnswer(${i})">
+      <span class="opt-letter">${letters[i]}</span>
+      ${opt}
+    </button>
+  `).join('');
+}
+
+function checkAnswer(chosen) {
+  if (answered) return;
+  answered = true;
+  const q = quizData[qIdx];
+  const btns = document.querySelectorAll('.quiz-option');
+  btns.forEach(b => b.disabled = true);
+  btns[q.ans].classList.add('correct');
+  if (chosen !== q.ans) btns[chosen].classList.add('wrong');
+  else score++;
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-feedback show ' + (chosen === q.ans ? 'ok' : 'bad');
+  fb.textContent = (chosen === q.ans ? '✓ 정답! ' : '✗ 오답. ') + q.exp;
+
+  document.getElementById('quiz-next').className = 'quiz-next-btn show';
+}
+
+document.getElementById('quiz-next').addEventListener('click', () => {
+  qIdx++;
+  if (qIdx >= quizData.length) {
+    document.getElementById('quiz-main').style.display = 'none';
+    const res = document.getElementById('quiz-result');
+    res.classList.add('show');
+    document.getElementById('result-score').textContent = score;
+    const msgs = [
+      '다시 한번 도전해보세요! K-POP의 역사는 깊습니다 😊',
+      '나쁘지 않아요! 조금만 더 공부해볼까요?',
+      '꽤 잘 알고 계시네요! K-POP 팬의 향기가 납니다.',
+      '거의 완벽해요! K-POP 박사님 인증 🎖',
+      '만점! 진정한 K-POP 전문가십니다 🏆',
+    ];
+    document.getElementById('result-msg').textContent = msgs[Math.min(score, 4)];
+  } else {
+    renderQuestion();
+  }
+});
+
+initQuiz();
+
+// ═══════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════
+
+let activeTag = 'all';
+let searchQuery = '';
+
+function renderCards() {
+  const container = document.getElementById('search-results');
+  const q = searchQuery.toLowerCase();
+  const genColors = ['', '#8b6fff', '#ff5fa0', '#ff7043', '#26d9b8'];
+
+  const filtered = idolData.filter(idol => {
+    const matchQ = !q ||
+      idol.name.toLowerCase().includes(q) ||
+      idol.agency.toLowerCase().includes(q) ||
+      idol.desc.toLowerCase().includes(q) ||
+      idol.tags.some(t => t.includes(q));
+    const matchTag = activeTag === 'all' || idol.tags.includes(activeTag);
+    return matchQ && matchTag;
+  });
+
+  container.innerHTML = '';
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="no-results">검색 결과가 없습니다. 다른 키워드로 시도해보세요.</div>';
+    return;
+  }
+
+  filtered.forEach(idol => {
+    let desc = idol.desc;
+    if (q) {
+      const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      desc = desc.replace(re, '<mark>$1</mark>');
+    }
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="rc-gen gen-${idol.gen}-text">${idol.gen}세대 · ${idol.debut}년 데뷔 · ${idol.agency}</div>
+      <div class="rc-name">${idol.name}</div>
+      <div class="rc-desc">${desc}</div>
+      <div class="rc-tags">${idol.tags.map(t => `<span class="rc-tag">${t}</span>`).join('')}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+document.getElementById('search-input').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  renderCards();
+});
+
+document.querySelectorAll('.tag-filter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tag-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeTag = btn.dataset.tag;
+    renderCards();
+  });
+});
+
+renderCards();
+
+// ═══════════════════════════════════════════════
+// SCROLL / NAV / REVEAL
+// ═══════════════════════════════════════════════
+
+const nav = document.getElementById('main-nav');
+let heroHeight = 0;
+
+function onScroll() {
+  heroHeight = heroHeight || document.querySelector('.hero').offsetHeight;
+  if (window.scrollY > heroHeight * 0.5) nav.classList.add('visible');
+  else nav.classList.remove('visible');
+
+  // Reveal sections
+  document.querySelectorAll('.reveal').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.88) {
+      el.classList.add('visible');
+      // Animate bars when chart section reveals
+      if (el.id === 'charts') animateBars();
+    }
+  });
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+</script>
+</body>
+</html>
