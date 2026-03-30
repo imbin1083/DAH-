@@ -3,27 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>K-POP 진화 보고서</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=DM+Mono:wght@400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
+<title>MZ세대 소비 기호와 캐릭터 산업 동향 분석</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --surface2: #1a1a26;
-    --border: rgba(255,255,255,0.07);
-    --text: #e8e6f0;
-    --muted: rgba(232,230,240,0.45);
-    --accent1: #c8a4ff;
-    --accent2: #ff6b9d;
-    --accent3: #4dd9c0;
-    --accent4: #ffb347;
-    --gen1: #8b6fff;
-    --gen2: #ff5fa0;
-    --gen3: #ff7043;
-    --gen4: #26d9b8;
-    --font-display: 'Bebas Neue', sans-serif;
-    --font-serif: 'Noto Serif KR', serif;
-    --font-mono: 'DM Mono', monospace;
+    --pink: #E84393;
+    --purple: #7B2FBE;
+    --coral: #FF6B6B;
+    --dark: #0D0D1A;
+    --dark2: #1A1A2E;
+    --white: #FFFFFF;
+    --gray1: #F0F0F5;
+    --gray2: #999;
+    --card-bg: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.08);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,1417 +24,1055 @@
   html { scroll-behavior: smooth; }
 
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-serif);
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--dark);
+    color: var(--white);
     overflow-x: hidden;
-    cursor: default;
+    cursor: none;
   }
 
-  /* ── NOISE OVERLAY ── */
+  /* Custom cursor */
+  .cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--pink); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.1s, opacity 0.2s;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1.5px solid rgba(232,67,147,0.5); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transition: transform 0.18s ease, width 0.2s, height 0.2s, opacity 0.2s;
+    transform: translate(-50%, -50%);
+  }
+  body:hover .cursor { opacity: 1; }
+
+  /* Grain overlay */
   body::before {
     content: '';
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0; z-index: 1;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.4;
+    pointer-events: none; opacity: 0.4;
   }
 
-  /* ── HERO ── */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-    padding: 4rem 2rem;
-    text-align: center;
-  }
-
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 20% 30%, rgba(139,111,255,0.12) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 80% 70%, rgba(255,91,160,0.10) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 60% 20%, rgba(38,217,184,0.07) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .hero-tag {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.2em;
-    color: var(--accent3);
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    opacity: 0;
-    animation: fadeUp 0.8s ease 0.2s forwards;
-  }
-
-  .hero-title {
-    font-family: var(--font-display);
-    font-size: clamp(5rem, 18vw, 14rem);
-    line-height: 0.9;
-    letter-spacing: 0.02em;
-    background: linear-gradient(135deg, #fff 0%, var(--accent1) 40%, var(--accent2) 80%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    opacity: 0;
-    animation: fadeUp 0.9s ease 0.4s forwards;
-  }
-
-  .hero-sub {
-    font-family: var(--font-serif);
-    font-size: clamp(0.9rem, 2.5vw, 1.2rem);
-    color: var(--muted);
-    margin-top: 1.5rem;
-    letter-spacing: 0.05em;
-    opacity: 0;
-    animation: fadeUp 0.9s ease 0.6s forwards;
-  }
-
-  .hero-stats {
-    display: flex;
-    gap: 3rem;
-    margin-top: 3.5rem;
-    opacity: 0;
-    animation: fadeUp 0.9s ease 0.8s forwards;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .hero-stat {
-    text-align: center;
-  }
-
-  .hero-stat-num {
-    font-family: var(--font-display);
-    font-size: 2.8rem;
-    line-height: 1;
-    color: var(--accent1);
-  }
-
-  .hero-stat-label {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-top: 0.3rem;
-  }
-
-  .scroll-hint {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    opacity: 0;
-    animation: fadeUp 1s ease 1.2s forwards;
-  }
-
-  .scroll-hint span {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
-
-  .scroll-line {
-    width: 1px;
-    height: 40px;
-    background: linear-gradient(to bottom, var(--accent1), transparent);
-    animation: scrollPulse 2s ease-in-out infinite;
-  }
-
-  /* ── NAV ── */
+  /* NAV */
   nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(10,10,15,0.85);
-    backdrop-filter: blur(20px);
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 18px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(13,13,26,0.85);
+    backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
-    transform: translateY(-100%);
+    transition: all 0.3s;
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; color: var(--pink); letter-spacing: 2px;
+  }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-size: 12px; color: rgba(255,255,255,0.5);
+    text-decoration: none; letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--pink); }
+  .nav-progress {
+    position: absolute; bottom: 0; left: 0; height: 2px;
+    background: linear-gradient(90deg, var(--pink), var(--purple));
+    width: 0%; transition: width 0.1s;
+  }
+
+  /* SECTIONS */
+  section {
+    min-height: 100vh; padding: 120px 48px 80px;
+    position: relative; z-index: 2;
+  }
+
+  /* HERO */
+  #hero {
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding-top: 100px; min-height: 100vh;
+    background: radial-gradient(ellipse at 70% 50%, rgba(123,47,190,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(232,67,147,0.1) 0%, transparent 50%);
+  }
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--pink); letter-spacing: 4px;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-tag::before {
+    content: ''; width: 40px; height: 1px; background: var(--pink);
+  }
+  .hero-title {
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 900; line-height: 1.0;
+    letter-spacing: -2px; margin-bottom: 32px;
+    max-width: 900px;
+  }
+  .hero-title .highlight {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-subtitle {
+    font-size: 16px; color: rgba(255,255,255,0.5);
+    max-width: 500px; line-height: 1.8; margin-bottom: 56px;
+  }
+  .hero-stats {
+    display: flex; gap: 48px; flex-wrap: wrap;
+  }
+  .hero-stat { border-left: 2px solid var(--pink); padding-left: 20px; }
+  .hero-stat .num {
+    font-family: 'Space Mono', monospace;
+    font-size: 32px; font-weight: 700; color: var(--white);
+    line-height: 1;
+  }
+  .hero-stat .label {
+    font-size: 12px; color: var(--gray2); margin-top: 6px;
+  }
+  .scroll-indicator {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    font-size: 10px; color: var(--gray2); letter-spacing: 2px;
+  }
+  .scroll-dot {
+    width: 6px; height: 6px; background: var(--pink);
+    border-radius: 50%; animation: bounce 1.5s infinite;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(8px); opacity: 0.3; }
+  }
+
+  /* SECTION HEADER */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--pink); letter-spacing: 4px;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; max-width: 60px;
+    height: 1px; background: var(--pink);
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 900; letter-spacing: -1px;
+    margin-bottom: 16px; line-height: 1.1;
+  }
+  .section-desc {
+    font-size: 14px; color: rgba(255,255,255,0.45);
+    max-width: 500px; line-height: 1.8; margin-bottom: 64px;
+  }
+
+  /* MARKET SECTION */
+  #market { background: var(--dark2); }
+  .market-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px; margin-bottom: 64px;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 36px 32px;
+    position: relative; overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+    cursor: pointer;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--pink), var(--purple));
+    transform: scaleX(0); transform-origin: left;
     transition: transform 0.4s ease;
   }
-
-  nav.visible { transform: translateY(0); }
-
-  .nav-logo {
-    font-family: var(--font-display);
-    font-size: 1.4rem;
-    letter-spacing: 0.1em;
-    background: linear-gradient(90deg, var(--accent1), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .stat-card:hover { transform: translateY(-6px); border-color: var(--pink); }
+  .stat-card:hover::before { transform: scaleX(1); }
+  .stat-card .big-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 48px; font-weight: 700;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; line-height: 1; margin-bottom: 12px;
   }
-
-  .nav-links {
-    display: flex;
-    gap: 2rem;
-    list-style: none;
+  .stat-card .stat-title {
+    font-size: 15px; font-weight: 700; margin-bottom: 8px;
   }
+  .stat-card .stat-desc { font-size: 12px; color: var(--gray2); line-height: 1.7; }
 
-  .nav-links a {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-    text-decoration: none;
-    text-transform: uppercase;
-    transition: color 0.2s;
+  /* Chart bars */
+  .chart-container {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 16px; padding: 40px; margin-bottom: 0;
   }
-
-  .nav-links a:hover { color: var(--accent1); }
-
-  /* ── SECTION WRAPPER ── */
-  section {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 5rem 2rem;
+  .chart-title {
+    font-size: 13px; color: var(--gray2); margin-bottom: 32px;
+    font-family: 'Space Mono', monospace; letter-spacing: 1px;
   }
-
-  .section-tag {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent3);
-    margin-bottom: 1rem;
+  .chart-bars {
+    display: flex; align-items: flex-end;
+    gap: 16px; height: 180px;
   }
-
-  .section-title {
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    letter-spacing: 0.04em;
-    line-height: 1;
-    margin-bottom: 3rem;
-  }
-
-  .section-divider {
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(90deg, var(--accent1), transparent);
-    margin: 5rem 0;
-    opacity: 0.3;
-  }
-
-  /* ── TIMELINE ── */
-  #timeline { padding-top: 3rem; }
-
-  .timeline-filters {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 3rem;
-    flex-wrap: wrap;
-  }
-
-  .filter-btn {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    padding: 0.5rem 1.2rem;
-    border-radius: 2px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: all 0.2s;
-  }
-
-  .filter-btn:hover, .filter-btn.active {
-    color: var(--bg);
-    border-color: transparent;
-  }
-
-  .filter-btn[data-gen="all"].active { background: var(--accent1); }
-  .filter-btn[data-gen="1"].active   { background: var(--gen1); }
-  .filter-btn[data-gen="2"].active   { background: var(--gen2); }
-  .filter-btn[data-gen="3"].active   { background: var(--gen3); }
-  .filter-btn[data-gen="4"].active   { background: var(--gen4); }
-
-  .timeline-track {
+  .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .bar-wrap { width: 100%; display: flex; justify-content: center; align-items: flex-end; height: 160px; }
+  .bar {
+    width: 60%; background: linear-gradient(180deg, var(--pink), var(--purple));
+    border-radius: 6px 6px 0 0;
+    transition: height 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
-    padding-left: 2.5rem;
   }
-
-  .timeline-track::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: linear-gradient(to bottom, var(--gen1), var(--gen2), var(--gen3), var(--gen4));
-    opacity: 0.4;
-  }
-
-  .timeline-item {
-    position: relative;
-    margin-bottom: 2.5rem;
-    opacity: 1;
-    transition: opacity 0.3s, transform 0.3s;
-  }
-
-  .timeline-item.hidden {
-    display: none;
-  }
-
-  .timeline-dot {
-    position: absolute;
-    left: -2.5rem;
-    top: 0.8rem;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    transform: translateX(-4px);
-  }
-
-  .gen-1 .timeline-dot { background: var(--gen1); box-shadow: 0 0 12px var(--gen1); }
-  .gen-2 .timeline-dot { background: var(--gen2); box-shadow: 0 0 12px var(--gen2); }
-  .gen-3 .timeline-dot { background: var(--gen3); box-shadow: 0 0 12px var(--gen3); }
-  .gen-4 .timeline-dot { background: var(--gen4); box-shadow: 0 0 12px var(--gen4); }
-
-  .timeline-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 1.5rem 1.8rem;
-    cursor: pointer;
-    transition: all 0.25s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .timeline-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-  }
-
-  .gen-1 .timeline-card::before { background: var(--gen1); }
-  .gen-2 .timeline-card::before { background: var(--gen2); }
-  .gen-3 .timeline-card::before { background: var(--gen3); }
-  .gen-4 .timeline-card::before { background: var(--gen4); }
-
-  .timeline-card:hover {
-    background: var(--surface2);
-    transform: translateX(4px);
-    border-color: rgba(255,255,255,0.12);
-  }
-
-  .tc-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .tc-year {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    margin-bottom: 0.35rem;
-  }
-
-  .tc-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    line-height: 1.3;
-  }
-
-  .tc-gen-badge {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    padding: 0.3rem 0.7rem;
-    border-radius: 2px;
+  .bar .bar-val {
+    position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
+    font-family: 'Space Mono', monospace; font-size: 11px; color: var(--white);
     white-space: nowrap;
-    flex-shrink: 0;
+  }
+  .bar-label { font-size: 11px; color: var(--gray2); }
+
+  /* PSYCHOLOGY SECTION */
+  #psychology { background: var(--dark); }
+  .psych-tabs {
+    display: flex; gap: 0; margin-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  .psych-tab {
+    padding: 16px 32px; font-size: 13px; font-weight: 500;
+    color: var(--gray2); cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s; margin-bottom: -1px;
+  }
+  .psych-tab.active { color: var(--pink); border-bottom-color: var(--pink); }
+  .psych-tab:hover { color: var(--white); }
+  .psych-panel { display: none; animation: fadeIn 0.4s ease; }
+  .psych-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .psych-content .emoji { font-size: 64px; margin-bottom: 24px; display: block; }
+  .psych-content h3 { font-size: 28px; font-weight: 900; margin-bottom: 16px; }
+  .psych-content p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.9; }
+  .psych-visual {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 20px; padding: 40px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .psych-bar-item { display: flex; flex-direction: column; gap: 8px; }
+  .psych-bar-label { font-size: 12px; color: var(--gray2); display: flex; justify-content: space-between; }
+  .psych-bar-track {
+    height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden;
+  }
+  .psych-bar-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--pink), var(--purple));
+    width: 0%; transition: width 1s ease;
   }
 
-  .gen-1 .tc-gen-badge { background: rgba(139,111,255,0.15); color: var(--gen1); border: 1px solid rgba(139,111,255,0.3); }
-  .gen-2 .tc-gen-badge { background: rgba(255,95,160,0.15); color: var(--gen2); border: 1px solid rgba(255,95,160,0.3); }
-  .gen-3 .tc-gen-badge { background: rgba(255,112,67,0.15); color: var(--gen3); border: 1px solid rgba(255,112,67,0.3); }
-  .gen-4 .tc-gen-badge { background: rgba(38,217,184,0.15); color: var(--gen4); border: 1px solid rgba(38,217,184,0.3); }
-
-  .tc-body {
-    font-size: 0.88rem;
-    color: var(--muted);
-    line-height: 1.7;
-    margin-top: 0.75rem;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease, margin-top 0.3s;
+  /* TRENDS SECTION */
+  #trends { background: var(--dark2); }
+  .trends-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; margin-bottom: 64px;
+  }
+  .trend-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px; cursor: pointer;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .trend-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(232,67,147,0.08), rgba(123,47,190,0.08));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .trend-card:hover { transform: translateY(-4px); border-color: rgba(232,67,147,0.4); }
+  .trend-card:hover::after { opacity: 1; }
+  .trend-emoji { font-size: 40px; margin-bottom: 20px; display: block; }
+  .trend-name {
+    font-size: 20px; font-weight: 900; margin-bottom: 12px;
+    color: var(--white);
+  }
+  .trend-desc { font-size: 12px; color: var(--gray2); line-height: 1.8; }
+  .trend-tag {
+    display: inline-block; margin-top: 16px;
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 10px; letter-spacing: 1px;
+    background: rgba(232,67,147,0.15); color: var(--pink);
+    border: 1px solid rgba(232,67,147,0.3);
   }
 
-  .timeline-card.open .tc-body {
-    max-height: 200px;
-    margin-top: 0.75rem;
+  /* 채꾸 section */
+  .chaekku-banner {
+    background: linear-gradient(135deg, rgba(232,67,147,0.1), rgba(123,47,190,0.1));
+    border: 1px solid rgba(232,67,147,0.2);
+    border-radius: 20px; padding: 48px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
   }
-
-  .tc-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 0.8rem;
+  .chaekku-title { font-size: 36px; font-weight: 900; margin-bottom: 16px; }
+  .chaekku-title span {
+    background: linear-gradient(135deg, var(--pink), var(--coral));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
-
-  .tc-tag {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    padding: 0.2rem 0.6rem;
+  .chaekku-desc { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.9; }
+  .chaekku-examples { display: flex; flex-direction: column; gap: 16px; }
+  .chaekku-example {
+    background: rgba(255,255,255,0.04); border-radius: 12px;
+    padding: 16px 20px; display: flex; gap: 16px; align-items: center;
     border: 1px solid var(--border);
-    border-radius: 2px;
-    color: rgba(232,230,240,0.5);
-  }
-
-  .tc-toggle {
-    font-size: 0.75rem;
-    color: var(--muted);
-    margin-top: 0.5rem;
-    font-family: var(--font-mono);
-    letter-spacing: 0.1em;
-    transition: color 0.2s;
-  }
-
-  .timeline-card:hover .tc-toggle { color: var(--accent1); }
-
-  /* ── CHART SECTION ── */
-  #charts .chart-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-top: 1rem;
-  }
-
-  @media (max-width: 700px) {
-    #charts .chart-grid { grid-template-columns: 1fr; }
-    nav { display: none; }
-  }
-
-  .chart-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 1.5rem;
-  }
-
-  .chart-card h3 {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 1.5rem;
-  }
-
-  /* Bar chart */
-  .bar-chart { display: flex; flex-direction: column; gap: 0.9rem; }
-
-  .bar-row {
-    display: grid;
-    grid-template-columns: 4.5rem 1fr 3rem;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .bar-label {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    text-align: right;
-  }
-
-  .bar-track {
-    height: 8px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 2px;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    width: 0;
-    transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
-  }
-
-  .bar-val {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    color: var(--text);
-    text-align: right;
-  }
-
-  /* Donut chart */
-  .donut-wrap {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .donut-svg { flex-shrink: 0; }
-
-  .donut-legend { display: flex; flex-direction: column; gap: 0.6rem; }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-  }
-
-  .legend-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  /* Line chart */
-  .line-chart-wrap { width: 100%; overflow: hidden; }
-
-  /* ── QUIZ SECTION ── */
-  #quiz .quiz-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 2.5rem;
-    max-width: 700px;
-  }
-
-  .quiz-progress {
-    display: flex;
-    gap: 0.4rem;
-    margin-bottom: 2rem;
-  }
-
-  .quiz-progress-dot {
-    flex: 1;
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    transition: background 0.3s;
-  }
-
-  .quiz-progress-dot.done { background: var(--accent1); }
-  .quiz-progress-dot.current { background: var(--accent2); }
-
-  .quiz-q-num {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-  }
-
-  .quiz-question {
-    font-size: 1.1rem;
-    font-weight: 700;
-    line-height: 1.5;
-    margin-bottom: 2rem;
-  }
-
-  .quiz-options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .quiz-option {
-    padding: 0.9rem 1.2rem;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    background: transparent;
-    color: var(--text);
-    font-family: var(--font-serif);
-    font-size: 0.92rem;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .quiz-option:hover:not(:disabled) {
-    background: var(--surface2);
-    border-color: var(--accent1);
-  }
-
-  .quiz-option.correct { border-color: var(--gen4); background: rgba(38,217,184,0.08); color: var(--gen4); }
-  .quiz-option.wrong   { border-color: var(--gen2); background: rgba(255,95,160,0.08); color: var(--gen2); }
-
-  .opt-letter {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    width: 1.4rem;
-    height: 1.4rem;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .quiz-feedback {
-    margin-top: 1.2rem;
-    padding: 0.9rem 1.2rem;
-    border-radius: 3px;
-    font-size: 0.88rem;
-    line-height: 1.6;
-    display: none;
-  }
-
-  .quiz-feedback.show { display: block; }
-  .quiz-feedback.ok  { background: rgba(38,217,184,0.08); border: 1px solid rgba(38,217,184,0.2); color: var(--gen4); }
-  .quiz-feedback.bad { background: rgba(255,95,160,0.08); border: 1px solid rgba(255,95,160,0.2); color: var(--gen2); }
-
-  .quiz-next-btn {
-    margin-top: 1.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 0.75rem 2rem;
-    border: 1px solid var(--accent1);
-    background: transparent;
-    color: var(--accent1);
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.2s;
-    display: none;
-  }
-
-  .quiz-next-btn.show { display: inline-block; }
-  .quiz-next-btn:hover { background: var(--accent1); color: var(--bg); }
-
-  .quiz-result {
-    text-align: center;
-    padding: 2rem 0;
-    display: none;
-  }
-
-  .quiz-result.show { display: block; }
-
-  .result-score {
-    font-family: var(--font-display);
-    font-size: 5rem;
-    background: linear-gradient(135deg, var(--accent1), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
-  }
-
-  .result-label {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-top: 0.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .result-msg { font-size: 1rem; color: var(--muted); line-height: 1.7; }
-
-  .quiz-restart {
-    margin-top: 1.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 0.75rem 2rem;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.2s;
-  }
-
-  .quiz-restart:hover { border-color: var(--accent1); color: var(--accent1); }
-
-  /* ── SEARCH ── */
-  #search .search-bar-wrap {
-    position: relative;
-    margin-bottom: 2rem;
-  }
-
-  .search-bar {
-    width: 100%;
-    padding: 1rem 1rem 1rem 3rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    color: var(--text);
-    font-family: var(--font-serif);
-    font-size: 1rem;
-    outline: none;
     transition: border-color 0.2s;
   }
+  .chaekku-example:hover { border-color: var(--pink); }
+  .chaekku-example .icon { font-size: 24px; flex-shrink: 0; }
+  .chaekku-example .text { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6; }
 
-  .search-bar:focus { border-color: var(--accent1); }
-  .search-bar::placeholder { color: var(--muted); }
-
-  .search-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted);
-    font-size: 0.9rem;
-    pointer-events: none;
+  /* STRATEGY SECTION */
+  #strategy { background: var(--dark); }
+  .strategy-table {
+    width: 100%; border-collapse: collapse; margin-bottom: 0;
+  }
+  .strategy-table th {
+    padding: 16px 24px; text-align: left;
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 2px; color: var(--pink);
+    border-bottom: 1px solid var(--border);
+    background: rgba(232,67,147,0.05);
+  }
+  .strategy-table td {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    font-size: 13px; vertical-align: top; line-height: 1.7;
+  }
+  .strategy-table tr { transition: background 0.2s; cursor: pointer; }
+  .strategy-table tr:hover td { background: rgba(232,67,147,0.04); }
+  .strategy-table .type-badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 700;
+    background: rgba(232,67,147,0.12); color: var(--pink);
+    border: 1px solid rgba(232,67,147,0.25);
+    white-space: nowrap;
+  }
+  .strategy-table .brand-name {
+    font-weight: 700; color: var(--white);
+  }
+  .strategy-table .result {
+    color: var(--pink); font-family: 'Space Mono', monospace;
+    font-size: 12px;
+  }
+  .table-wrap {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
   }
 
-  .search-filters {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
+  /* CASE STUDIES */
+  #cases { background: var(--dark2); }
+  .cases-nav {
+    display: flex; gap: 16px; margin-bottom: 48px; flex-wrap: wrap;
+  }
+  .case-btn {
+    padding: 10px 24px; border-radius: 40px;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    border: 1px solid var(--border); color: var(--gray2);
+    background: transparent; transition: all 0.2s;
+  }
+  .case-btn.active, .case-btn:hover {
+    border-color: var(--pink); color: var(--white);
+    background: rgba(232,67,147,0.1);
+  }
+  .case-panel { display: none; }
+  .case-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+  .case-info .case-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 80px; font-weight: 700; opacity: 0.06;
+    position: absolute; top: -20px; right: 0;
+  }
+  .case-info { position: relative; }
+  .case-company {
+    font-size: 13px; color: var(--pink); letter-spacing: 2px;
+    font-family: 'Space Mono', monospace; margin-bottom: 12px;
+  }
+  .case-title { font-size: 32px; font-weight: 900; margin-bottom: 24px; line-height: 1.2; }
+  .case-strategy-label {
+    font-size: 11px; color: var(--gray2); letter-spacing: 2px;
+    margin-bottom: 16px; font-family: 'Space Mono', monospace;
+  }
+  .case-strategies { display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
+  .case-strategy-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.7;
+  }
+  .case-strategy-item::before {
+    content: '→'; color: var(--pink); flex-shrink: 0; margin-top: 2px;
+    font-family: 'Space Mono', monospace;
+  }
+  .case-results {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .case-result-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px;
+    transition: border-color 0.2s;
+  }
+  .case-result-card:hover { border-color: var(--pink); }
+  .case-result-card .result-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 32px; font-weight: 700;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; line-height: 1; margin-bottom: 8px;
+  }
+  .case-result-card .result-label { font-size: 12px; color: var(--gray2); line-height: 1.5; }
+  .case-insight {
+    margin-top: 0; background: rgba(232,67,147,0.06);
+    border: 1px solid rgba(232,67,147,0.2); border-radius: 16px;
+    padding: 28px 32px; display: flex; flex-direction: column; justify-content: center;
+  }
+  .case-insight-label {
+    font-size: 10px; color: var(--pink); letter-spacing: 2px;
+    font-family: 'Space Mono', monospace; margin-bottom: 12px;
+  }
+  .case-insight-text {
+    font-size: 18px; font-weight: 700; line-height: 1.6;
   }
 
-  .tag-filter {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-    padding: 0.35rem 0.9rem;
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
+  /* CONCLUSION */
+  #conclusion { background: var(--dark); }
+  .conclusion-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    margin-bottom: 80px;
   }
-
-  .tag-filter.active { border-color: var(--accent3); color: var(--accent3); }
-
-  .search-results {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
+  .conclusion-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 20px; padding: 40px; position: relative; overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
   }
-
-  .result-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 1.2rem;
-    transition: all 0.2s;
-    cursor: default;
+  .conclusion-card:hover { transform: translateY(-6px); border-color: rgba(232,67,147,0.4); }
+  .conclusion-card .card-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 64px; font-weight: 700;
+    position: absolute; top: -10px; right: 16px;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; opacity: 0.2;
   }
-
-  .result-card:hover {
-    border-color: rgba(255,255,255,0.1);
-    transform: translateY(-2px);
-    background: var(--surface2);
+  .conclusion-card h3 { font-size: 18px; font-weight: 900; margin-bottom: 16px; line-height: 1.3; }
+  .conclusion-card p { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.9; }
+  .conclusion-banner {
+    background: linear-gradient(135deg, var(--pink) 0%, var(--purple) 100%);
+    border-radius: 20px; padding: 64px; text-align: center;
   }
-
-  .result-card.hidden { display: none; }
-
-  .rc-gen {
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
+  .conclusion-banner h2 {
+    font-size: clamp(32px, 5vw, 60px); font-weight: 900; margin-bottom: 20px; line-height: 1.1;
   }
-
-  .gen-1-text { color: var(--gen1); }
-  .gen-2-text { color: var(--gen2); }
-  .gen-3-text { color: var(--gen3); }
-  .gen-4-text { color: var(--gen4); }
-
-  .rc-name {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 0.4rem;
+  .conclusion-banner p {
+    font-size: 16px; opacity: 0.85; line-height: 1.8; max-width: 600px; margin: 0 auto 40px;
   }
-
-  .rc-desc {
-    font-size: 0.82rem;
-    color: var(--muted);
-    line-height: 1.6;
-    margin-bottom: 0.75rem;
+  .tags-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .tag-pill {
+    padding: 8px 20px; border-radius: 40px;
+    font-size: 12px; font-weight: 700; letter-spacing: 1px;
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+    transition: background 0.2s;
   }
+  .tag-pill:hover { background: rgba(255,255,255,0.25); }
 
-  .rc-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-  }
-
-  .rc-tag {
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
-    letter-spacing: 0.07em;
-    padding: 0.2rem 0.55rem;
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    color: rgba(232,230,240,0.45);
-  }
-
-  .no-results {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    padding: 3rem;
-    text-align: center;
-    grid-column: 1/-1;
-  }
-
-  /* ── FOOTER ── */
+  /* FOOTER */
   footer {
-    border-top: 1px solid var(--border);
-    padding: 2rem;
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-    text-transform: uppercase;
+    padding: 40px 48px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    position: relative; z-index: 2;
   }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
+  footer .footer-logo {
+    font-family: 'Space Mono', monospace; font-size: 12px; color: var(--pink);
   }
+  footer .footer-text { font-size: 11px; color: var(--gray2); }
 
-  @keyframes scrollPulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  .reveal {
-    opacity: 0;
-    transform: translateY(20px);
+  /* ANIMATIONS */
+  .fade-up {
+    opacity: 0; transform: translateY(30px);
     transition: opacity 0.7s ease, transform 0.7s ease;
   }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
 
-  .reveal.visible {
-    opacity: 1;
-    transform: none;
-  }
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: var(--pink); border-radius: 2px; }
 
-  /* Highlight search match */
-  mark {
-    background: rgba(200,164,255,0.25);
-    color: var(--accent1);
-    border-radius: 1px;
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 100px 24px 60px; }
+    .market-grid, .trends-grid, .conclusion-grid { grid-template-columns: 1fr; }
+    .psych-panel.active, .chaekku-banner, .case-panel.active { grid-template-columns: 1fr; }
+    .case-results { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
   }
 </style>
 </head>
 <body>
 
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
 <!-- NAV -->
-<nav id="main-nav">
-  <div class="nav-logo">K-POP REPORT</div>
-  <ul class="nav-links">
-    <li><a href="#timeline">타임라인</a></li>
-    <li><a href="#charts">데이터</a></li>
-    <li><a href="#quiz">퀴즈</a></li>
-    <li><a href="#search">아이돌 검색</a></li>
-  </ul>
+<nav>
+  <div class="nav-logo">MZ × CHARACTER IP</div>
+  <div class="nav-links">
+    <a href="#market">시장 현황</a>
+    <a href="#psychology">소비 심리</a>
+    <a href="#trends">트렌드</a>
+    <a href="#strategy">전략</a>
+    <a href="#cases">사례</a>
+    <a href="#conclusion">결론</a>
+  </div>
+  <div class="nav-progress" id="navProgress"></div>
 </nav>
 
 <!-- HERO -->
-<div class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-tag">2025 인터랙티브 보고서</div>
-  <h1 class="hero-title">K-POP</h1>
-  <p class="hero-sub">1992년부터 현재까지 — 한국 대중음악의 글로벌 진화</p>
+<section id="hero">
+  <div class="hero-tag">TREND REPORT 2025</div>
+  <h1 class="hero-title">
+    MZ세대<br>
+    <span class="highlight">캐릭터 IP</span><br>
+    산업 분석
+  </h1>
+  <p class="hero-subtitle">
+    팬덤 경제와 디지털 자아 표현이 만들어낸<br>
+    16.2조 원 규모의 독자적 생태계를 탐구합니다.
+  </p>
   <div class="hero-stats">
     <div class="hero-stat">
-      <div class="hero-stat-num">4</div>
-      <div class="hero-stat-label">세대</div>
+      <div class="num" data-count="16.2">0</div>
+      <div class="label">2025 시장규모 (조 원)</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num">30+</div>
-      <div class="hero-stat-label">년의 역사</div>
+      <div class="num" data-count="1150">0</div>
+      <div class="label">CU 콜라보 매출 신장률 (%)</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num">100+</div>
-      <div class="hero-stat-label">개국 팬덤</div>
+      <div class="num" data-count="400000">0</div>
+      <div class="label">팬덤 설문 참여자 수</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num">$12B</div>
-      <div class="hero-stat-label">연간 경제효과</div>
+      <div class="num" data-count="10000000">0</div>
+      <div class="label">이모티콘 48h 다운로드</div>
     </div>
   </div>
-  <div class="scroll-hint">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
-  </div>
-</div>
-
-<!-- TIMELINE -->
-<section id="timeline" class="reveal">
-  <div class="section-tag">Chapter 01</div>
-  <h2 class="section-title">세대별 타임라인</h2>
-
-  <div class="timeline-filters">
-    <button class="filter-btn active" data-gen="all">전체</button>
-    <button class="filter-btn" data-gen="1">1세대</button>
-    <button class="filter-btn" data-gen="2">2세대</button>
-    <button class="filter-btn" data-gen="3">3세대</button>
-    <button class="filter-btn" data-gen="4">4세대</button>
-  </div>
-
-  <div class="timeline-track" id="timeline-track">
-    <!-- items injected by JS -->
+  <div class="scroll-indicator">
+    <div class="scroll-dot"></div>
+    SCROLL
   </div>
 </section>
 
-<div class="section-divider"></div>
+<!-- MARKET -->
+<section id="market">
+  <div class="section-label">01 — 시장 현황</div>
+  <h2 class="section-title fade-up">캐릭터 IP 시장<br>성장 지표</h2>
+  <p class="section-desc fade-up">국내 캐릭터 IP 산업은 MZ세대의 강력한 팬덤과 디지털 자아 표현 욕구를 동력으로 독자적 거대 생태계로 진화했습니다.</p>
 
-<!-- CHARTS -->
-<section id="charts" class="reveal">
-  <div class="section-tag">Chapter 02</div>
-  <h2 class="section-title">데이터로 보는 K-POP</h2>
-
-  <div class="chart-grid">
-
-    <!-- Bar: 유튜브 구독자 -->
-    <div class="chart-card">
-      <h3>대표 채널 유튜브 구독자 (단위: 백만)</h3>
-      <div class="bar-chart" id="bar-chart"></div>
+  <div class="market-grid">
+    <div class="stat-card fade-up">
+      <div class="big-num">16.2조</div>
+      <div class="stat-title">2025 시장 규모 전망</div>
+      <div class="stat-desc">2020년 13.6조 원에서 꾸준한 우상향 성장세. 연평균 약 3.6% 성장률 기록 중.</div>
     </div>
+    <div class="stat-card fade-up" style="transition-delay:0.1s">
+      <div class="big-num">6×</div>
+      <div class="stat-title">CU 콜라보 상품 수 증가</div>
+      <div class="stat-desc">2021년 50여 종 → 2023년 310여 종. 매출 신장률 2022년 1,150%, 2023년 320% 기록.</div>
+    </div>
+    <div class="stat-card fade-up" style="transition-delay:0.2s">
+      <div class="big-num">1천만</div>
+      <div class="stat-title">이모티콘 다운로드 (48h)</div>
+      <div class="stat-desc">카카오 '미니 이모티콘' 출시 이틀 만에 달성. 춘식이 설문에 40만 명 참여.</div>
+    </div>
+  </div>
 
-    <!-- Donut: 세대별 해외 팬 비중 -->
-    <div class="chart-card">
-      <h3>세대별 해외 팬덤 비중 (%)</h3>
-      <div class="donut-wrap">
-        <svg class="donut-svg" id="donut-svg" width="130" height="130" viewBox="0 0 130 130"></svg>
-        <div class="donut-legend" id="donut-legend"></div>
+  <div class="chart-container fade-up">
+    <div class="chart-title">// 국내 캐릭터 IP 시장 규모 추이 (조 원)</div>
+    <div class="chart-bars" id="chartBars">
+      <div class="bar-group">
+        <div class="bar-wrap"><div class="bar" style="height:0" data-h="75%"><span class="bar-val">13.6</span></div></div>
+        <div class="bar-label">2020</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-wrap"><div class="bar" style="height:0" data-h="77%"><span class="bar-val">14.0</span></div></div>
+        <div class="bar-label">2021</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-wrap"><div class="bar" style="height:0" data-h="80%"><span class="bar-val">14.5</span></div></div>
+        <div class="bar-label">2022</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-wrap"><div class="bar" style="height:0" data-h="83%"><span class="bar-val">15.0</span></div></div>
+        <div class="bar-label">2023</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-wrap"><div class="bar" style="height:0" data-h="86%"><span class="bar-val">15.6</span></div></div>
+        <div class="bar-label">2024E</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-wrap"><div class="bar" style="height:0" data-h="90%"><span class="bar-val">16.2</span></div></div>
+        <div class="bar-label">2025E</div>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- Bar: 빌보드 Hot 100 최고 순위 -->
-    <div class="chart-card">
-      <h3>빌보드 Hot 100 역대 최고 순위 (낮을수록 좋음)</h3>
-      <div class="bar-chart" id="bar-chart2"></div>
+<!-- PSYCHOLOGY -->
+<section id="psychology">
+  <div class="section-label">02 — 소비 심리</div>
+  <h2 class="section-title fade-up">MZ세대의<br>심리적 소비 요인</h2>
+  <p class="section-desc fade-up">캐릭터 소비는 단순한 구매 행위를 넘어 정서적 결합과 자아 투사라는 복합적 동기에서 기인합니다.</p>
+
+  <div class="psych-tabs">
+    <div class="psych-tab active" onclick="switchTab(0)">💛 가심비</div>
+    <div class="psych-tab" onclick="switchTab(1)">💜 디지털 페르소나</div>
+    <div class="psych-tab" onclick="switchTab(2)">⭐ 키덜트 × 덕심</div>
+  </div>
+
+  <div class="psych-panel active" id="panel0">
+    <div class="psych-content fade-up">
+      <span class="emoji">💛</span>
+      <h3>가심비 극대화</h3>
+      <p>실용성을 초월한 '정서적 위안'과 '재미'가 구매의 핵심 준거가 됩니다. 불확실한 미래보다 현재의 소소한 행복을 중시하는 소비 패턴과 맞닿아 있으며, 이는 캐릭터 굿즈 시장의 핵심 성장 동인입니다.</p>
     </div>
-
-    <!-- Line: 앨범 판매량 추이 -->
-    <div class="chart-card">
-      <h3>연도별 K-POP 앨범 판매량 추이 (백만 장)</h3>
-      <div class="line-chart-wrap">
-        <svg id="line-svg" width="100%" viewBox="0 0 320 150" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="psych-visual fade-up">
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>정서적 만족도</span><span>92%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="92"></div></div>
+      </div>
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>재구매 의향</span><span>78%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="78"></div></div>
+      </div>
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>SNS 공유율</span><span>65%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="65"></div></div>
+      </div>
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>브랜드 친밀감</span><span>85%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="85"></div></div>
       </div>
     </div>
+  </div>
 
+  <div class="psych-panel" id="panel1">
+    <div class="psych-content fade-up">
+      <span class="emoji">💜</span>
+      <h3>디지털 페르소나 & 감정 투사</h3>
+      <p>이모티콘은 분노, 불안, 무력감 등 현대인의 복잡한 감정의 결을 재치 있게 대변하는 수단입니다. 정교하지 않은 캐릭터에 자신의 감정을 투사하여 소통하는 것은 디지털 네이티브 세대의 독특한 문화적 특징입니다.</p>
+    </div>
+    <div class="psych-visual fade-up">
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>감정 표현 대리만족</span><span>88%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="88"></div></div>
+      </div>
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>자아 투사 경험</span><span>73%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="73"></div></div>
+      </div>
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>이모티콘 일 평균 사용</span><span>81%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="81"></div></div>
+      </div>
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>캐릭터 공감 소비</span><span>69%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="69"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="psych-panel" id="panel2">
+    <div class="psych-content fade-up">
+      <span class="emoji">⭐</span>
+      <h3>키덜트 × 덕심(Duk-Sim)</h3>
+      <p>어린 시절의 향수를 현대적 감각으로 재해석한 '키덜트' 문화와 좋아하는 대상에 깊이 몰입하는 '덕질'이 결합되었습니다. 희소성 있는 굿즈를 소유함으로써 자신의 정체성을 규정하려는 경향이 강합니다.</p>
+    </div>
+    <div class="psych-visual fade-up">
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>한정판 구매 경험</span><span>71%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="71"></div></div>
+      </div>
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>굿즈 정체성 표현</span><span>62%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="62"></div></div>
+      </div>
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>팬덤 커뮤니티 참여</span><span>58%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="58"></div></div>
+      </div>
+      <div class="psych-bar-item">
+        <div class="psych-bar-label"><span>프리미엄 굿즈 지불 의향</span><span>77%</span></div>
+        <div class="psych-bar-track"><div class="psych-bar-fill" data-w="77"></div></div>
+      </div>
+    </div>
   </div>
 </section>
 
-<div class="section-divider"></div>
+<!-- TRENDS -->
+<section id="trends">
+  <div class="section-label">03 — 트렌드</div>
+  <h2 class="section-title fade-up">인디 캐릭터 & 채꾸 문화</h2>
+  <p class="section-desc fade-up">완벽한 미학보다 창작자의 독립적 세계관과 '솔직함'이 돋보이는 인디 캐릭터가 시장을 주도하고 있습니다.</p>
 
-<!-- QUIZ -->
-<section id="quiz" class="reveal">
-  <div class="section-tag">Chapter 03</div>
-  <h2 class="section-title">K-POP 퀴즈</h2>
-
-  <div class="quiz-wrap">
-    <div class="quiz-progress" id="quiz-progress"></div>
-    <div id="quiz-main">
-      <div class="quiz-q-num" id="quiz-q-num"></div>
-      <div class="quiz-question" id="quiz-question"></div>
-      <div class="quiz-options" id="quiz-options"></div>
-      <div class="quiz-feedback" id="quiz-feedback"></div>
-      <button class="quiz-next-btn" id="quiz-next">다음 문제 →</button>
+  <div class="trends-grid">
+    <div class="trend-card fade-up">
+      <span class="trend-emoji">😢</span>
+      <div class="trend-name">가나디 (Dew Ganadi)</div>
+      <div class="trend-desc">SNS 'X'의 밈(Meme)에서 시작된 캐릭터. 아련한 표정과 심한 감정 기복, "나 안아"라는 직설적인 문구가 특징. CU 콜라보로 2달 만에 45만 개 판매.</div>
+      <span class="trend-tag">SNS 바이럴</span>
     </div>
-    <div class="quiz-result" id="quiz-result">
-      <div class="result-score" id="result-score"></div>
-      <div class="result-label">/ 5점 만점</div>
-      <div class="result-msg" id="result-msg"></div>
-      <button class="quiz-restart" onclick="initQuiz()">다시 풀기</button>
+    <div class="trend-card fade-up" style="transition-delay:0.1s">
+      <span class="trend-emoji">👓</span>
+      <div class="trend-name">안경만두</div>
+      <div class="trend-desc">작가가 좋아하는 안경과 만두를 합쳐 만든 '기묘하고 웃긴' 찐만두 캐릭터. 주류 문화와 차별화된 서브컬처적 매력을 발산하는 독자 세계관.</div>
+      <span class="trend-tag">서브컬처</span>
+    </div>
+    <div class="trend-card fade-up" style="transition-delay:0.2s">
+      <span class="trend-emoji">😑</span>
+      <div class="trend-name">최고심 / 쥬니햄</div>
+      <div class="trend-desc">무심한 표정 속 현대인의 고단함을 풀어내는 재치 있는 문구로 견고한 팬덤 형성. 삐뚤빼뚤한 선과 완벽하지 않은 그림체의 '무해한 웃음'이 핵심.</div>
+      <span class="trend-tag">공감 마케팅</span>
+    </div>
+  </div>
+
+  <div class="chaekku-banner fade-up">
+    <div>
+      <div class="chaekku-title">🎀 <span>채꾸</span> 문화</div>
+      <p class="chaekku-desc">
+        '채꾸(소지품 꾸미기)'는 굿즈를 단순 소장품에서 '표현의 재료'로 확장시킨 새로운 문화입니다. MZ세대는 캐릭터 굿즈를 활용해 자신만의 개성을 표현하는 커스터마이징 트렌드를 이끌고 있습니다.
+      </p>
+    </div>
+    <div class="chaekku-examples">
+      <div class="chaekku-example">
+        <span class="icon">🍶</span>
+        <span class="text">가나디 음료 병뚜껑 → 키링·인형 소품으로 재활용하는 DIY 트렌드</span>
+      </div>
+      <div class="chaekku-example">
+        <span class="icon">💇</span>
+        <span class="text">보다나(Vodana) 고데기에 전용 캐릭터 키링을 장착하는 꾸미기</span>
+      </div>
+      <div class="chaekku-example">
+        <span class="icon">🎒</span>
+        <span class="text">캐릭터 굿즈를 일상 소품에 조합·커스터마이징하는 개인 맞춤 표현</span>
+      </div>
     </div>
   </div>
 </section>
 
-<div class="section-divider"></div>
+<!-- STRATEGY -->
+<section id="strategy">
+  <div class="section-label">04 — 업종별 전략</div>
+  <h2 class="section-title fade-up">캐릭터 IP 활용 전략</h2>
+  <p class="section-desc fade-up">다양한 산업군에서 캐릭터 IP를 활용해 1st-party 데이터 확보 및 CRM 강화를 꾀하고 있습니다.</p>
 
-<!-- SEARCH -->
-<section id="search" class="reveal">
-  <div class="section-tag">Chapter 04</div>
-  <h2 class="section-title">아이돌 검색</h2>
+  <div class="table-wrap fade-up">
+    <table class="strategy-table">
+      <thead>
+        <tr>
+          <th>전략 유형</th>
+          <th>기대 효과</th>
+          <th>브랜드 & 주요 성과</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="type-badge">한정판 굿즈</span></td>
+          <td>소장 욕구 자극 · 조기 완판 유도</td>
+          <td><span class="brand-name">아이소이</span> (망그러진 곰) · <span class="brand-name">에이피알</span> (춘식이 에디션)</td>
+        </tr>
+        <tr>
+          <td><span class="type-badge">럭셔리 디지털</span></td>
+          <td>브랜드 친밀도 · 잠재 고객 확보</td>
+          <td><span class="brand-name">발렌티노</span> (유미의 세포들) · <span class="brand-name">프라다</span> (카카오 입점)</td>
+        </tr>
+        <tr>
+          <td><span class="type-badge">전략적 MOU</span></td>
+          <td>온·오프라인 시너지 창출</td>
+          <td><span class="brand-name">크리스챤 디올 뷰티</span> × 카카오 비즈니스 MOU 체결</td>
+        </tr>
+        <tr>
+          <td><span class="type-badge">이모티콘 CRM</span></td>
+          <td>CPA 절감 · 신규 친구 확보</td>
+          <td><span class="brand-name">크록스</span>: <span class="result">CPA 800원대</span> 달성 · 신규 친구 비율 60%+</td>
+        </tr>
+        <tr>
+          <td><span class="type-badge">글로벌 로컬라이제이션</span></td>
+          <td>해외 입지 강화 · K-뷰티 확산</td>
+          <td><span class="brand-name">토니모리</span> (스퀴시멜로우) · <span class="brand-name">젤리캣</span> 한국 공식 팝업</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-  <div class="search-bar-wrap">
-    <span class="search-icon">⌕</span>
-    <input class="search-bar" id="search-input" type="text" placeholder="아티스트 이름, 소속사, 장르로 검색...">
+<!-- CASES -->
+<section id="cases">
+  <div class="section-label">05 — 성공 사례</div>
+  <h2 class="section-title fade-up">주요 성공 사례<br>심층 분석</h2>
+  <p class="section-desc fade-up">캐릭터 IP 전략의 실제 성과를 수치로 확인하세요.</p>
+
+  <div class="cases-nav">
+    <button class="case-btn active" onclick="switchCase(0)">01. CU × 가나디</button>
+    <button class="case-btn" onclick="switchCase(1)">02. 아이소이 × 망그러진 곰</button>
+    <button class="case-btn" onclick="switchCase(2)">03. 팝업스토어 전략</button>
   </div>
 
-  <div class="search-filters" id="tag-filters">
-    <button class="tag-filter active" data-tag="all">전체</button>
-    <button class="tag-filter" data-tag="보이밴드">보이밴드</button>
-    <button class="tag-filter" data-tag="걸그룹">걸그룹</button>
-    <button class="tag-filter" data-tag="솔로">솔로</button>
-    <button class="tag-filter" data-tag="댄스">댄스</button>
-    <button class="tag-filter" data-tag="힙합">힙합</button>
+  <div class="case-panel active" id="case0">
+    <div class="case-info">
+      <div class="case-num">01</div>
+      <div class="case-company">CU × GANADI</div>
+      <div class="case-title">굿즈형 패키지로 SNS 바이럴 선도</div>
+      <div class="case-strategy-label">// 핵심 전략</div>
+      <div class="case-strategies">
+        <div class="case-strategy-item">캐릭터 얼굴을 입체적으로 구현한 음료 병뚜껑 제작으로 리유저블 가치 부여</div>
+        <div class="case-strategy-item">SNS 인증샷 유행을 선도하는 자발적 바이럴 마케팅 전개</div>
+        <div class="case-strategy-item">패키지 자체를 굿즈화하여 '구매 후 재사용' 경험 창출</div>
+      </div>
+      <div class="case-results">
+        <div class="case-result-card">
+          <div class="result-num">45만</div>
+          <div class="result-label">개 — 출시 2달 누적 판매량 돌파</div>
+        </div>
+        <div class="case-result-card">
+          <div class="result-num">3만</div>
+          <div class="result-label">개 — 바나나우유 초도 물량 완판 후 전국 품절</div>
+        </div>
+      </div>
+    </div>
+    <div class="case-insight">
+      <div class="case-insight-label">// INSIGHT</div>
+      <div class="case-insight-text">패키지를 굿즈화하면 소비자가 자발적으로 SNS 콘텐츠를 생산합니다. 광고비 없이 바이럴을 만드는 가장 강력한 방법입니다.</div>
+    </div>
   </div>
 
-  <div class="search-results" id="search-results"></div>
+  <div class="case-panel" id="case1">
+    <div class="case-info">
+      <div class="case-num">02</div>
+      <div class="case-company">AESOP × MANGRIZZLY BEAR</div>
+      <div class="case-title">명확한 컨셉 + 멀티채널 유통 전략</div>
+      <div class="case-strategy-label">// 핵심 전략</div>
+      <div class="case-strategies">
+        <div class="case-strategy-item">'망그러진 수부지 피부 구제'라는 명확한 스토리라인 설정</div>
+        <div class="case-strategy-item">무신사 · 올리브영 · 자사몰 별 굿즈 구성 차별화 (멀티채널)</div>
+        <div class="case-strategy-item">각 채널 고객 특성에 맞는 맞춤형 굿즈로 구매 동기 극대화</div>
+      </div>
+      <div class="case-results">
+        <div class="case-result-card">
+          <div class="result-num">#1</div>
+          <div class="result-label">무신사 런칭 후 스킨케어 브랜드 최초 전체 랭킹 1위</div>
+        </div>
+        <div class="case-result-card">
+          <div class="result-num">24h</div>
+          <div class="result-label">이내 초도 물량 완판이라는 기록적 성과 달성</div>
+        </div>
+      </div>
+    </div>
+    <div class="case-insight">
+      <div class="case-insight-label">// INSIGHT</div>
+      <div class="case-insight-text">캐릭터의 서사를 제품 효능과 연결하면 '공감 → 구매' 전환율이 극적으로 높아집니다. 멀티채널 차별화는 각 플랫폼의 팬덤을 모두 흡수합니다.</div>
+    </div>
+  </div>
+
+  <div class="case-panel" id="case2">
+    <div class="case-info">
+      <div class="case-num">03</div>
+      <div class="case-company">GANADI & JELLYCAT POP-UP</div>
+      <div class="case-title">세계관 몰입형 오프라인 경험</div>
+      <div class="case-strategy-label">// 핵심 전략</div>
+      <div class="case-strategies">
+        <div class="case-strategy-item">단순 판매가 아닌 '경험의 연장선'으로 팝업 공간 기획</div>
+        <div class="case-strategy-item">젤리캣: '우주 여행' 내러티브 + 입국 심사 체험으로 프리미엄 키덜트 전략</div>
+        <div class="case-strategy-item">가나디: 사전 예약제로 희소성과 팬덤 결집 효과 극대화</div>
+      </div>
+      <div class="case-results">
+        <div class="case-result-card">
+          <div class="result-num">18분</div>
+          <div class="result-label">만에 사전 예약 7,000석 전석 매진</div>
+        </div>
+        <div class="case-result-card">
+          <div class="result-num">1만+</div>
+          <div class="result-label">명 — 2주간 방문객 유치, 팬덤 록인 효과 달성</div>
+        </div>
+      </div>
+    </div>
+    <div class="case-insight">
+      <div class="case-insight-label">// INSIGHT</div>
+      <div class="case-insight-text">희소성 있는 오프라인 몰입 경험은 팬덤을 '록인'합니다. 한 번 세계관을 경험한 소비자는 장기 충성 고객으로 전환됩니다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONCLUSION -->
+<section id="conclusion">
+  <div class="section-label">06 — 결론</div>
+  <h2 class="section-title fade-up">전략적 시사점 &<br>향후 전망</h2>
+  <p class="section-desc fade-up">미래 캐릭터 산업의 핵심은 '단순 구매'가 아닌 '세계관의 공유'입니다.</p>
+
+  <div class="conclusion-grid">
+    <div class="conclusion-card fade-up">
+      <div class="card-num">01</div>
+      <h3>정서적 공명 마케팅으로 전환</h3>
+      <p>정교한 미학에서 벗어나 현대인의 감정 기복과 '하찮은 귀여움'을 긍정하는 Authenticity Marketing으로 패러다임이 이동하고 있습니다.</p>
+    </div>
+    <div class="conclusion-card fade-up" style="transition-delay:0.1s">
+      <div class="card-num">02</div>
+      <h3>1st-Party 데이터 기반 CRM 고도화</h3>
+      <p>단순 라이선싱을 넘어 카카오 미니 이모티콘 스튜디오 같은 창작자 플랫폼을 활용한 브랜드 고유 페르소나 구축이 필수입니다.</p>
+    </div>
+    <div class="conclusion-card fade-up" style="transition-delay:0.2s">
+      <div class="card-num">03</div>
+      <h3>오프라인 세계관 몰입의 희소성 전략</h3>
+      <p>희소성 있는 오프라인 몰입 경험은 브랜드의 장기적 충성도를 결정짓는 가장 강력한 전략적 자산이 될 것입니다.</p>
+    </div>
+  </div>
+
+  <div class="conclusion-banner fade-up">
+    <h2>캐릭터 IP는<br>브랜드의 감정 언어</h2>
+    <p>MZ세대가 캐릭터를 소비하는 것은 제품이 아니라 세계관을 구매하는 행위입니다. 브랜드는 '완벽한 디자인'보다 '진정성 있는 감정 공명'으로 승부해야 합니다.</p>
+    <div class="tags-row">
+      <span class="tag-pill">정서적 공명</span>
+      <span class="tag-pill">진정성 마케팅</span>
+      <span class="tag-pill">팬덤 록인</span>
+      <span class="tag-pill">CRM 고도화</span>
+      <span class="tag-pill">세계관 몰입</span>
+      <span class="tag-pill">1st-Party Data</span>
+    </div>
+  </div>
 </section>
 
 <footer>
-  &copy; 2025 K-POP 진화 보고서 · 인터랙티브 에디션 · 모든 데이터는 공개 자료 기반 추정치
+  <div class="footer-logo">MZ × CHARACTER IP TREND REPORT 2025</div>
+  <div class="footer-text">캐릭터 IP 시장 규모 16.2조 원 전망 · 팬덤 경제와 디지털 CRM의 융합</div>
 </footer>
 
 <script>
-// ═══════════════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════════════
-
-const timelineData = [
-  { gen: 1, year: '1992', title: '서태지와 아이들 데뷔', desc: '한국 대중음악의 혁명. 랩·록·댄스를 융합한 "난 알아요"가 발매되며 기성 음악계에 충격을 줬다. K-POP의 원점으로 평가받는다.', tags: ['랩', '댄스', '혁신'] },
-  { gen: 1, year: '1996', title: 'SM엔터테인먼트 H.O.T 데뷔', desc: '이수만이 설계한 아이돌 시스템의 첫 결과물. 트레이닝→데뷔→팬덤 관리로 이어지는 기획사 주도 모델을 확립했다.', tags: ['아이돌', '기획사', 'SM'] },
-  { gen: 1, year: '1998', title: 'S.E.S & 핑클 — 걸그룹 시대', desc: '국내 최초의 체계적 걸그룹 경쟁 구도. S.E.S(SM)와 핑클(DSP)의 양강 구도가 팬덤 문화를 폭발적으로 키웠다.', tags: ['걸그룹', '팬덤', '1세대'] },
-  { gen: 2, year: '2003', title: 'TVXQ 데뷔 — 아시아 한류 시작', desc: '동방신기의 일본 진출은 K-POP의 아시아 확산을 가속했다. 오리콘 차트 정상을 점령하며 한류 1.0을 이끌었다.', tags: ['한류', '일본', 'TVXQ'] },
-  { gen: 2, year: '2006', title: '빅뱅 데뷔 — YG의 반란', desc: '아이돌에 힙합·R&B를 접목한 빅뱅은 기존 청소년 팬덤을 넘어 20~30대까지 흡수하며 K-POP의 장르 폭을 확장했다.', tags: ['힙합', 'YG', '빅뱅'] },
-  { gen: 2, year: '2007', title: '소녀시대 & 원더걸스', desc: '"Tell Me" 댄스 열풍과 소녀시대의 "Gee"는 국내 음원 차트를 갈아치웠고, 원더걸스는 미국 빌보드 버블100에 진입해 K-POP 역사를 새로 썼다.', tags: ['걸그룹', '빌보드', '댄스'] },
-  { gen: 3, year: '2012', title: 'PSY — 강남스타일 전 세계 충격', desc: '유튜브 역사상 최초로 10억 뷰를 돌파. 서구권이 K-POP의 존재를 처음으로 실감하게 된 역사적 전환점이다.', tags: ['유튜브', '글로벌', '바이럴'] },
-  { gen: 3, year: '2012', title: 'EXO & 고도화된 세계관', desc: 'SM은 EXO를 통해 아이돌 스토리텔링을 한 단계 끌어올렸다. 초자연적 세계관과 한중 동시 데뷔로 콘셉트 마케팅의 교과서가 됐다.', tags: ['세계관', 'EXO', 'SM'] },
-  { gen: 3, year: '2013', title: 'BTS 데뷔 — 작은 기획사의 기적', desc: '빅히트엔터테인먼트(현 HYBE)에서 데뷔한 BTS는 SNS와 팬 소통을 무기로 기존 K-POP 공식을 깼다. 빌보드 Hot 100 1위, 그래미 노미네이트까지.', tags: ['BTS', '빌보드', 'SNS'] },
-  { gen: 3, year: '2016', title: 'BLACKPINK 데뷔 — 걸크러쉬 글로벌', desc: 'YG의 걸그룹 BLACKPINK는 "BOOMBAYAH"로 데뷔 즉시 유튜브 레코드를 세우며 서구 팝 시장에서도 K-POP 걸그룹의 가능성을 입증했다.', tags: ['BLACKPINK', '유튜브', '걸그룹'] },
-  { gen: 4, year: '2020', title: 'aespa — 가상 세계관의 진화', desc: 'SM은 aespa를 통해 현실 멤버와 AI 아바타(æ)가 공존하는 메타버스 K-POP을 선보였다. 4세대의 상징적 출발점.', tags: ['메타버스', 'AI', 'aespa'] },
-  { gen: 4, year: '2022', title: '르세라핌 & IVE — 다국적 걸그룹', desc: '처음부터 글로벌을 겨냥한 다국적 멤버 구성과 숏폼 친화적 안무, 틱톡 바이럴 전략이 4세대 걸그룹의 표준이 됐다.', tags: ['글로컬', '틱톡', '다국적'] },
-  { gen: 4, year: '2022', title: 'NewJeans — Y2K & 탈장르화', desc: 'ADOR 소속 NewJeans는 Y2K 미학과 트렌디한 틱톡 바이럴로 기성 K-POP 공식을 거부하며 신선함을 무기로 삼았다.', tags: ['Y2K', 'NewJeans', '탈장르'] },
-];
-
-const barData = [
-  { label: 'BLACKPINK', val: 93.1, color: '#ff6b9d' },
-  { label: 'BTS',       val: 77.5, color: '#8b6fff' },
-  { label: 'TWICE',     val: 14.5, color: '#ffb347' },
-  { label: 'EXO',       val: 12.8, color: '#4dd9c0' },
-  { label: 'aespa',     val: 10.2, color: '#c8a4ff' },
-];
-
-const bar2Data = [
-  { label: 'BTS — Dynamite', val: 1,  color: '#8b6fff' },
-  { label: 'BTS — Butter',   val: 1,  color: '#8b6fff' },
-  { label: 'BLACKPINK — Pink Venom', val: 22, color: '#ff6b9d' },
-  { label: 'TWICE — TT',    val: 37, color: '#ffb347' },
-  { label: 'PSY — Gangnam', val: 64, color: '#4dd9c0' },
-];
-
-const donutData = [
-  { label: '1세대 (해외 5%)',  pct: 5,  color: '#8b6fff' },
-  { label: '2세대 (해외 25%)', pct: 25, color: '#ff5fa0' },
-  { label: '3세대 (해외 60%)', pct: 60, color: '#ff7043' },
-  { label: '4세대 (해외 75%)', pct: 75, color: '#26d9b8' },
-];
-
-const lineData = [
-  { year: '2005', val: 2 },
-  { year: '2008', val: 5 },
-  { year: '2012', val: 12 },
-  { year: '2015', val: 20 },
-  { year: '2018', val: 44 },
-  { year: '2020', val: 56 },
-  { year: '2022', val: 80 },
-  { year: '2024', val: 100 },
-];
-
-const quizData = [
-  {
-    q: '"K-POP 아이돌 시스템의 아버지"로 불리며 SM엔터테인먼트를 창립한 인물은?',
-    opts: ['양현석', '이수만', '박진영', '방시혁'],
-    ans: 1,
-    exp: '이수만은 1989년 SM기획(현 SM엔터테인먼트)을 설립하고 체계적인 트레이닝-데뷔-팬덤 관리 모델을 처음으로 정착시켰습니다.'
-  },
-  {
-    q: '유튜브 역사상 최초로 10억 뷰를 달성한 K-POP 뮤직비디오는?',
-    opts: ['BTS — Dynamite', 'BLACKPINK — DDU-DU', 'PSY — Gangnam Style', 'TWICE — TT'],
-    ans: 2,
-    exp: 'PSY의 강남스타일(2012)은 유튜브 최초의 10억 뷰 영상이 됐으며, K-POP을 전 세계에 알린 역사적 전환점입니다.'
-  },
-  {
-    q: 'BTS가 소속된 기획사 HYBE의 이전 이름은?',
-    opts: ['JYP엔터테인먼트', '빅히트엔터테인먼트', '스타쉽엔터테인먼트', 'FNC엔터테인먼트'],
-    ans: 1,
-    exp: '빅히트엔터테인먼트(Big Hit Entertainment)는 2021년 현재의 사명인 HYBE로 변경했습니다.'
-  },
-  {
-    q: '다음 중 "4세대" 아이돌 그룹이 아닌 것은?',
-    opts: ['aespa', 'NewJeans', 'EXO', '르세라핌'],
-    ans: 2,
-    exp: 'EXO는 2012년 데뷔한 3세대 대표 그룹입니다. aespa(2020), NewJeans(2022), 르세라핌(2022)은 모두 4세대 그룹입니다.'
-  },
-  {
-    q: 'SM엔터테인먼트가 4세대에 내놓은 "메타버스 걸그룹"의 이름은?',
-    opts: ['ITZY', 'aespa', 'f(x)', 'Red Velvet'],
-    ans: 1,
-    exp: 'aespa(에스파)는 SM이 2020년 선보인 그룹으로, 현실 멤버와 AI 가상 자아(æ)가 공존하는 독특한 메타버스 세계관이 특징입니다.'
-  },
-];
-
-const idolData = [
-  { name: 'BTS', gen: 3, agency: 'HYBE', debut: '2013', type: '보이밴드', tags: ['보이밴드', '힙합', 'SNS', '댄스'], desc: '빌보드 Hot 100 1위를 기록한 최초의 K-POP 그룹. RM·진·슈가·제이홉·지민·뷔·정국으로 구성.' },
-  { name: 'BLACKPINK', gen: 3, agency: 'YG', debut: '2016', type: '걸그룹', tags: ['걸그룹', '팝', '유튜브', '댄스'], desc: '유튜브 구독자 9천만 명 이상의 역대 최다 구독 K-POP 채널. 제니·지수·로제·리사.' },
-  { name: 'EXO', gen: 3, agency: 'SM', debut: '2012', type: '보이밴드', tags: ['보이밴드', '세계관', '댄스'], desc: '한중 동시 데뷔라는 혁신적 전략으로 아시아 팬덤을 사로잡은 3세대 대표 그룹.' },
-  { name: 'TWICE', gen: 3, agency: 'JYP', debut: '2015', type: '걸그룹', tags: ['걸그룹', '팝', '댄스', '일본'], desc: '국내 최다 밀리언셀러 걸그룹. 9인조로 일본·동남아시아에서도 강력한 팬덤 보유.' },
-  { name: 'aespa', gen: 4, agency: 'SM', debut: '2020', type: '걸그룹', tags: ['걸그룹', '메타버스', '댄스', '세계관'], desc: 'AI 가상 아바타와 현실 멤버가 공존하는 메타버스 콘셉트의 4세대 선두주자.' },
-  { name: 'NewJeans', gen: 4, agency: 'ADOR', debut: '2022', type: '걸그룹', tags: ['걸그룹', 'Y2K', '틱톡', '팝'], desc: 'Y2K 감성과 틱톡 바이럴로 기존 K-POP 공식을 거부한 독특한 포지셔닝의 그룹.' },
-  { name: '르세라핌', gen: 4, agency: 'HYBE', debut: '2022', type: '걸그룹', tags: ['걸그룹', '댄스', '글로벌', '다국적'], desc: '처음부터 글로벌을 겨냥한 다국적 멤버 구성. "FEARLESS"로 데뷔 첫 주 화려한 성적.' },
-  { name: '아이브', gen: 4, agency: 'Starship', debut: '2021', type: '걸그룹', tags: ['걸그룹', '팝', '댄스', '글로벌'], desc: '"ELEVEN"으로 데뷔하자마자 각종 차트를 석권. 4세대 걸그룹 경쟁의 중심축.' },
-  { name: '동방신기', gen: 2, agency: 'SM', debut: '2003', type: '보이밴드', tags: ['보이밴드', '한류', '일본', '댄스'], desc: '한류 1.0의 아이콘. 일본 오리콘 차트 1위를 장기간 유지하며 아시아 한류를 이끌었다.' },
-  { name: '소녀시대', gen: 2, agency: 'SM', debut: '2007', type: '걸그룹', tags: ['걸그룹', '팝', '한류', '댄스'], desc: '"Gee"로 음원 차트를 장악하며 2세대 걸그룹의 전설이 됐다. 9인조 대형 그룹.' },
-  { name: '빅뱅', gen: 2, agency: 'YG', debut: '2006', type: '보이밴드', tags: ['보이밴드', '힙합', 'R&B', 'YG'], desc: 'K-POP에 힙합과 R&B를 본격적으로 접목한 선구자. G-DRAGON·T.O.P·태양·대성·승리.' },
-  { name: 'PSY', gen: 3, agency: 'YG', debut: '2001', type: '솔로', tags: ['솔로', '댄스', '글로벌', '바이럴'], desc: '"강남스타일"로 유튜브 최초 10억 뷰를 달성하며 K-POP의 글로벌 가능성을 입증했다.' },
-];
-
-// ═══════════════════════════════════════════════
-// TIMELINE
-// ═══════════════════════════════════════════════
-
-function renderTimeline(filter = 'all') {
-  const track = document.getElementById('timeline-track');
-  track.innerHTML = '';
-  const items = filter === 'all' ? timelineData : timelineData.filter(d => d.gen == filter);
-  items.forEach(item => {
-    const div = document.createElement('div');
-    div.className = `timeline-item gen-${item.gen}`;
-    div.innerHTML = `
-      <div class="timeline-dot"></div>
-      <div class="timeline-card" onclick="this.classList.toggle('open')">
-        <div class="tc-header">
-          <div>
-            <div class="tc-year">${item.year}</div>
-            <div class="tc-title">${item.title}</div>
-          </div>
-          <span class="tc-gen-badge">${item.gen}세대</span>
-        </div>
-        <div class="tc-body">
-          ${item.desc}
-          <div class="tc-tags">${item.tags.map(t => `<span class="tc-tag">${t}</span>`).join('')}</div>
-        </div>
-        <div class="tc-toggle">↓ 클릭해서 자세히 보기</div>
-      </div>
-    `;
-    track.appendChild(div);
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
   });
-}
-
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderTimeline(btn.dataset.gen);
-  });
-});
-
-renderTimeline();
-
-// ═══════════════════════════════════════════════
-// CHARTS
-// ═══════════════════════════════════════════════
-
-function renderBarChart(containerId, data, maxVal) {
-  const wrap = document.getElementById(containerId);
-  wrap.innerHTML = '';
-  const max = maxVal || Math.max(...data.map(d => d.val));
-  data.forEach(d => {
-    const pct = (d.val / max) * 100;
-    const row = document.createElement('div');
-    row.className = 'bar-row';
-    row.innerHTML = `
-      <div class="bar-label">${d.label}</div>
-      <div class="bar-track">
-        <div class="bar-fill" style="background:${d.color}" data-width="${pct}%"></div>
-      </div>
-      <div class="bar-val">${d.val}</div>
-    `;
-    wrap.appendChild(row);
-  });
-}
-
-function renderDonut() {
-  const svg = document.getElementById('donut-svg');
-  const legend = document.getElementById('donut-legend');
-  svg.innerHTML = '';
-  legend.innerHTML = '';
-  const cx = 65, cy = 65, r = 48, stroke = 16;
-  const circumference = 2 * Math.PI * r;
-  const total = donutData.reduce((s, d) => s + d.pct, 0);
-  let offset = 0;
-
-  donutData.forEach(d => {
-    const dash = (d.pct / total) * circumference;
-    const gap  = circumference - dash;
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', cx);
-    circle.setAttribute('cy', cy);
-    circle.setAttribute('r', r);
-    circle.setAttribute('fill', 'none');
-    circle.setAttribute('stroke', d.color);
-    circle.setAttribute('stroke-width', stroke);
-    circle.setAttribute('stroke-dasharray', `${dash} ${gap}`);
-    circle.setAttribute('stroke-dashoffset', -offset);
-    circle.setAttribute('transform', `rotate(-90, ${cx}, ${cy})`);
-    circle.style.opacity = '0.85';
-    svg.appendChild(circle);
-    offset += dash;
-
-    const li = document.createElement('div');
-    li.className = 'legend-item';
-    li.innerHTML = `<span class="legend-dot" style="background:${d.color}"></span>${d.label}`;
-    legend.appendChild(li);
-  });
-}
-
-function renderLineChart() {
-  const svg = document.getElementById('line-svg');
-  const W = 320, H = 150, pad = { t: 10, r: 10, b: 30, l: 30 };
-  const iW = W - pad.l - pad.r;
-  const iH = H - pad.t - pad.b;
-  const maxVal = Math.max(...lineData.map(d => d.val));
-  const pts = lineData.map((d, i) => {
-    const x = pad.l + (i / (lineData.length - 1)) * iW;
-    const y = pad.t + iH - (d.val / maxVal) * iH;
-    return { x, y, ...d };
+  (function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animRing);
+  })();
+  document.querySelectorAll('a,button,.stat-card,.trend-card,.psych-tab,.case-btn,.tag-pill').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(2)';
+      ring.style.width = '50px'; ring.style.height = '50px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.width = '36px'; ring.style.height = '36px';
+    });
   });
 
-  // Area fill
-  const areaPath = `M${pts[0].x},${pad.t + iH} ` +
-    pts.map(p => `L${p.x},${p.y}`).join(' ') +
-    ` L${pts[pts.length-1].x},${pad.t + iH} Z`;
-
-  svg.innerHTML = `
-    <defs>
-      <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#8b6fff" stop-opacity="0.3"/>
-        <stop offset="100%" stop-color="#8b6fff" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-    <path d="${areaPath}" fill="url(#lg)"/>
-    <polyline points="${pts.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="#8b6fff" stroke-width="1.5"/>
-    ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#8b6fff"/>`).join('')}
-    ${pts.filter((_, i) => i % 2 === 0).map(p =>
-      `<text x="${p.x}" y="${H - 8}" text-anchor="middle" font-size="8" fill="rgba(232,230,240,0.4)" font-family="'DM Mono', monospace">${p.year}</text>`
-    ).join('')}
-    ${[0, 50, 100].map(v => {
-      const y = pad.t + iH - (v / maxVal) * iH;
-      return `<line x1="${pad.l}" y1="${y}" x2="${W - pad.r}" y2="${y}" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
-              <text x="${pad.l - 4}" y="${y + 3}" text-anchor="end" font-size="8" fill="rgba(232,230,240,0.35)" font-family="'DM Mono', monospace">${v}</text>`;
-    }).join('')}
-  `;
-}
-
-function animateBars() {
-  document.querySelectorAll('.bar-fill').forEach(bar => {
-    bar.style.width = bar.dataset.width;
-  });
-}
-
-renderBarChart('bar-chart', barData);
-renderBarChart('bar-chart2', bar2Data.map(d => ({...d, val: 101 - d.val})), 100);
-renderDonut();
-renderLineChart();
-
-// ═══════════════════════════════════════════════
-// QUIZ
-// ═══════════════════════════════════════════════
-
-let qIdx = 0, score = 0, answered = false;
-
-function initQuiz() {
-  qIdx = 0; score = 0; answered = false;
-  document.getElementById('quiz-result').classList.remove('show');
-  document.getElementById('quiz-main').style.display = '';
-  renderQuestion();
-}
-
-function renderQuestion() {
-  answered = false;
-  const q = quizData[qIdx];
-  const letters = ['A', 'B', 'C', 'D'];
-
-  // Progress
-  const prog = document.getElementById('quiz-progress');
-  prog.innerHTML = quizData.map((_, i) => {
-    let cls = 'quiz-progress-dot';
-    if (i < qIdx) cls += ' done';
-    else if (i === qIdx) cls += ' current';
-    return `<div class="${cls}"></div>`;
-  }).join('');
-
-  document.getElementById('quiz-q-num').textContent = `문제 ${qIdx + 1} / ${quizData.length}`;
-  document.getElementById('quiz-question').textContent = q.q;
-  document.getElementById('quiz-feedback').className = 'quiz-feedback';
-  document.getElementById('quiz-next').className = 'quiz-next-btn';
-
-  const optsEl = document.getElementById('quiz-options');
-  optsEl.innerHTML = q.opts.map((opt, i) => `
-    <button class="quiz-option" onclick="checkAnswer(${i})">
-      <span class="opt-letter">${letters[i]}</span>
-      ${opt}
-    </button>
-  `).join('');
-}
-
-function checkAnswer(chosen) {
-  if (answered) return;
-  answered = true;
-  const q = quizData[qIdx];
-  const btns = document.querySelectorAll('.quiz-option');
-  btns.forEach(b => b.disabled = true);
-  btns[q.ans].classList.add('correct');
-  if (chosen !== q.ans) btns[chosen].classList.add('wrong');
-  else score++;
-
-  const fb = document.getElementById('quiz-feedback');
-  fb.className = 'quiz-feedback show ' + (chosen === q.ans ? 'ok' : 'bad');
-  fb.textContent = (chosen === q.ans ? '✓ 정답! ' : '✗ 오답. ') + q.exp;
-
-  document.getElementById('quiz-next').className = 'quiz-next-btn show';
-}
-
-document.getElementById('quiz-next').addEventListener('click', () => {
-  qIdx++;
-  if (qIdx >= quizData.length) {
-    document.getElementById('quiz-main').style.display = 'none';
-    const res = document.getElementById('quiz-result');
-    res.classList.add('show');
-    document.getElementById('result-score').textContent = score;
-    const msgs = [
-      '다시 한번 도전해보세요! K-POP의 역사는 깊습니다 😊',
-      '나쁘지 않아요! 조금만 더 공부해볼까요?',
-      '꽤 잘 알고 계시네요! K-POP 팬의 향기가 납니다.',
-      '거의 완벽해요! K-POP 박사님 인증 🎖',
-      '만점! 진정한 K-POP 전문가십니다 🏆',
-    ];
-    document.getElementById('result-msg').textContent = msgs[Math.min(score, 4)];
-  } else {
-    renderQuestion();
-  }
-});
-
-initQuiz();
-
-// ═══════════════════════════════════════════════
-// SEARCH
-// ═══════════════════════════════════════════════
-
-let activeTag = 'all';
-let searchQuery = '';
-
-function renderCards() {
-  const container = document.getElementById('search-results');
-  const q = searchQuery.toLowerCase();
-  const genColors = ['', '#8b6fff', '#ff5fa0', '#ff7043', '#26d9b8'];
-
-  const filtered = idolData.filter(idol => {
-    const matchQ = !q ||
-      idol.name.toLowerCase().includes(q) ||
-      idol.agency.toLowerCase().includes(q) ||
-      idol.desc.toLowerCase().includes(q) ||
-      idol.tags.some(t => t.includes(q));
-    const matchTag = activeTag === 'all' || idol.tags.includes(activeTag);
-    return matchQ && matchTag;
+  // Scroll progress
+  const progress = document.getElementById('navProgress');
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    progress.style.width = pct + '%';
   });
 
-  container.innerHTML = '';
+  // Fade-up observer
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // Animate bars if in chart
+        if (e.target.classList.contains('chart-container') || e.target.closest('#market')) {
+          animateBars();
+          animateCounters();
+        }
+        // Animate psych bars
+        e.target.querySelectorAll('.psych-bar-fill').forEach(b => {
+          setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 300);
+        });
+      }
+    });
+  }, { threshold: 0.15 });
 
-  if (filtered.length === 0) {
-    container.innerHTML = '<div class="no-results">검색 결과가 없습니다. 다른 키워드로 시도해보세요.</div>';
-    return;
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Also observe sections for counter/bar animation
+  const marketObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { animateBars(); animateCounters(); }
+    });
+  }, { threshold: 0.2 });
+  const marketSection = document.getElementById('market');
+  if (marketSection) marketObserver.observe(marketSection);
+
+  // Chart bars animation
+  let barsAnimated = false;
+  function animateBars() {
+    if (barsAnimated) return;
+    barsAnimated = true;
+    document.querySelectorAll('.bar').forEach((bar, i) => {
+      setTimeout(() => { bar.style.height = bar.dataset.h; }, i * 100);
+    });
   }
 
-  filtered.forEach(idol => {
-    let desc = idol.desc;
-    if (q) {
-      const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-      desc = desc.replace(re, '<mark>$1</mark>');
-    }
-    const card = document.createElement('div');
-    card.className = 'result-card';
-    card.innerHTML = `
-      <div class="rc-gen gen-${idol.gen}-text">${idol.gen}세대 · ${idol.debut}년 데뷔 · ${idol.agency}</div>
-      <div class="rc-name">${idol.name}</div>
-      <div class="rc-desc">${desc}</div>
-      <div class="rc-tags">${idol.tags.map(t => `<span class="rc-tag">${t}</span>`).join('')}</div>
-    `;
-    container.appendChild(card);
-  });
-}
+  // Counter animation
+  let countersAnimated = false;
+  function animateCounters() {
+    if (countersAnimated) return;
+    countersAnimated = true;
+    document.querySelectorAll('[data-count]').forEach(el => {
+      const target = parseFloat(el.dataset.count);
+      const isLarge = target >= 1000;
+      const duration = 2000;
+      const start = performance.now();
+      function update(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = target * eased;
+        if (target >= 10000000) el.textContent = (current / 10000000).toFixed(1) + '천만';
+        else if (target >= 10000) el.textContent = Math.round(current / 10000) + '만';
+        else if (target >= 1000) el.textContent = current.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        else el.textContent = current.toFixed(1);
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    });
+  }
 
-document.getElementById('search-input').addEventListener('input', e => {
-  searchQuery = e.target.value;
-  renderCards();
-});
+  // Tabs
+  function switchTab(idx) {
+    document.querySelectorAll('.psych-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+    document.querySelectorAll('.psych-panel').forEach((p, i) => {
+      p.classList.toggle('active', i === idx);
+      if (i === idx) {
+        p.querySelectorAll('.psych-bar-fill').forEach(b => {
+          b.style.width = '0%';
+          setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 200);
+        });
+      }
+    });
+  }
 
-document.querySelectorAll('.tag-filter').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tag-filter').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeTag = btn.dataset.tag;
-    renderCards();
-  });
-});
+  // Cases
+  function switchCase(idx) {
+    document.querySelectorAll('.case-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+    document.querySelectorAll('.case-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  }
 
-renderCards();
-
-// ═══════════════════════════════════════════════
-// SCROLL / NAV / REVEAL
-// ═══════════════════════════════════════════════
-
-const nav = document.getElementById('main-nav');
-let heroHeight = 0;
-
-function onScroll() {
-  heroHeight = heroHeight || document.querySelector('.hero').offsetHeight;
-  if (window.scrollY > heroHeight * 0.5) nav.classList.add('visible');
-  else nav.classList.remove('visible');
-
-  // Reveal sections
-  document.querySelectorAll('.reveal').forEach(el => {
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.88) {
-      el.classList.add('visible');
-      // Animate bars when chart section reveals
-      if (el.id === 'charts') animateBars();
-    }
-  });
-}
-
-window.addEventListener('scroll', onScroll, { passive: true });
-onScroll();
+  // Psych bars when section visible
+  const psychObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.psych-bar-fill').forEach(b => {
+          setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 300);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.psych-visual').forEach(el => psychObserver.observe(el));
 </script>
 </body>
 </html>
